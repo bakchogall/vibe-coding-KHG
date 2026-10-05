@@ -103,9 +103,9 @@
     t('highly detailed', 'quality', '세부 묘사가 많음'),
     t('sharp focus', 'quality', '초점이 선명함'),
     t('hdr', 'quality', '하이 다이내믹 레인지(밝고 어두운 부분을 폭넓게 표현)'),
-    u('masterpiece', 'quality'),
-    u('award-winning', 'quality'),
-    u('trending on artstation', 'quality'),
+    t('masterpiece', 'quality', '걸작 수준을 요구하는 품질 강화 표현'),
+    t('award-winning', 'quality', '수상작 수준을 요구하는 품질 강화 표현'),
+    t('trending on artstation', 'quality', 'ArtStation 인기작 수준을 요구하는 품질 강화 표현'),
 
     // 카메라 움직임 (영상용)
     t('pan', 'camera_motion', '카메라를 좌우로 회전'),

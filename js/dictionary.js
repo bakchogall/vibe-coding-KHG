@@ -14,23 +14,41 @@
     { id: 'composition',    ko: '구도',          appliesTo: ['image', 'video'] },
     { id: 'color',          ko: '색',            appliesTo: ['image', 'video'] },
     { id: 'quality',        ko: '품질/해상도',   appliesTo: ['image', 'video'] },
+    { id: 'intensity',      ko: '가중치/수식어', appliesTo: ['image', 'video'] },
     { id: 'camera_motion',  ko: '카메라 움직임', appliesTo: ['video'] },
     { id: 'subject_motion', ko: '피사체 움직임', appliesTo: ['video'] }
   ];
 
   var UNVERIFIED = '검증 필요';
 
-  function t(term, element, ko) {
-    return { term: term, element: element, ko: ko, verified: true };
+  // 용어 하나는 의미(senses) 목록을 가진다. 의미마다 요소 하나 + 설명 하나.
+  // 한 단어가 여러 요소로 쓰이면(다의어) 의미를 여러 개 둔다.
+  function sense(element, ko) {
+    return { element: element, ko: ko, verified: true };
   }
+  // 의미 1개짜리 용어
+  function t(term, element, ko) {
+    return { term: term, senses: [sense(element, ko)] };
+  }
+  // 설명이 확실하지 않은 의미 1개짜리 용어
   function u(term, element) {
-    return { term: term, element: element, ko: UNVERIFIED, verified: false };
+    return { term: term, senses: [{ element: element, ko: UNVERIFIED, verified: false }] };
+  }
+  // 다의어: pairs = [[element, ko], ...]
+  function m(term, pairs) {
+    return { term: term, senses: pairs.map(function (p) { return sense(p[0], p[1]); }) };
   }
 
   PC.DEFAULT_TERMS = [
     // 주제
-    t('portrait', 'subject', '인물의 얼굴·상반신을 담은 사진/그림'),
-    t('landscape', 'subject', '자연 풍경'),
+    m('portrait', [
+      ['subject', '인물의 얼굴·상반신을 담은 사진/그림'],
+      ['composition', '세로로 긴 화면 방향(세로형 구도)']
+    ]),
+    m('landscape', [
+      ['subject', '자연 풍경'],
+      ['composition', '가로로 긴 화면 방향(가로형 구도)']
+    ]),
     t('still life', 'subject', '정물(사물을 배치해 그린 장면)'),
     t('character', 'subject', '캐릭터'),
     t('creature', 'subject', '생물, 괴물 등 가상의 존재'),
@@ -95,17 +113,44 @@
     t('cool tone', 'color', '차가운 색조'),
     t('black and white', 'color', '흑백'),
     t('high contrast', 'color', '밝고 어두운 차이가 큼'),
+    m('salmon', [
+      ['subject', '연어(물고기)'],
+      ['color', '연어살 같은 분홍빛 주황색']
+    ]),
 
     // 품질/해상도
     t('4k', 'quality', '4K 해상도'),
     t('8k', 'quality', '8K 해상도'),
     t('high resolution', 'quality', '고해상도'),
     t('highly detailed', 'quality', '세부 묘사가 많음'),
+    t('detailed', 'quality', '세부가 자세히 표현됨'),
     t('sharp focus', 'quality', '초점이 선명함'),
     t('hdr', 'quality', '하이 다이내믹 레인지(밝고 어두운 부분을 폭넓게 표현)'),
     t('masterpiece', 'quality', '걸작 수준을 요구하는 품질 강화 표현'),
     t('award-winning', 'quality', '수상작 수준을 요구하는 품질 강화 표현'),
     t('trending on artstation', 'quality', 'ArtStation 인기작 수준을 요구하는 품질 강화 표현'),
+
+    // 가중치/수식어 (뒤따르는 말의 정도를 조절)
+    t('very', 'intensity', '매우'),
+    t('extremely', 'intensity', '극도로'),
+    t('ultra', 'intensity', '극도의, 초(超)-'),
+    t('highly', 'intensity', '매우, 고도로'),
+    t('super', 'intensity', '매우, 초(超)-'),
+    t('hyper', 'intensity', '과도한, 초(超)-'),
+    t('slightly', 'intensity', '약간'),
+    t('subtle', 'intensity', '은은한, 미묘한'),
+    t('heavily', 'intensity', '심하게, 많이'),
+    t('somewhat', 'intensity', '다소'),
+    t('moderately', 'intensity', '적당히'),
+    t('fairly', 'intensity', '꽤'),
+    t('quite', 'intensity', '꽤, 상당히'),
+    t('really', 'intensity', '정말로'),
+    t('incredibly', 'intensity', '믿기 어려울 만큼 매우'),
+    t('exceptionally', 'intensity', '유난히, 매우'),
+    t('intensely', 'intensity', '강렬하게'),
+    t('strongly', 'intensity', '강하게'),
+    t('mildly', 'intensity', '약하게, 순하게'),
+    t('overly', 'intensity', '지나치게'),
 
     // 카메라 움직임 (영상용)
     t('pan', 'camera_motion', '카메라를 좌우로 회전'),
@@ -116,7 +161,10 @@
     t('tracking shot', 'camera_motion', '움직이는 대상을 따라가며 촬영'),
     t('handheld', 'camera_motion', '손으로 든 듯한 흔들림'),
     t('static shot', 'camera_motion', '카메라가 고정된 화면'),
-    t('drone shot', 'camera_motion', '드론으로 높은 곳에서 촬영한 시점'),
+    m('drone shot', [
+      ['camera_motion', '드론이 날면서 촬영하는 카메라 이동'],
+      ['composition', '드론으로 높이 올라 내려다보는 시점(항공 구도)']
+    ]),
     t('orbit', 'camera_motion', '대상 주위를 도는 카메라'),
 
     // 피사체 움직임 (영상용)

@@ -8,7 +8,7 @@
   // 분류 대상이 아닌 기능어. 미분류 개수가 부풀지 않게 'ignored'로 처리한다.
   var IGNORED_WORDS = {};
   ('a an the of in on at with and or to for from by as is are be it its this that these those ' +
-   'into onto over under near very her his their him them she he they').split(' ')
+   'into onto over under near her his their him them she he they').split(' ')
     .forEach(function (w) { IGNORED_WORDS[w] = true; });
 
   // 단어 구분: 공백과 구두점. 하이픈·아포스트로피는 단어 안에 남긴다.
@@ -29,6 +29,20 @@
     return out;
   }
 
+  // 용어 항목 → 유효한 의미 목록. { senses: [...] } 또는 의미 1개짜리 { element, ko, verified } 를 받는다.
+  // 요소가 없거나 같은 요소가 중복된 의미는 버린다.
+  function normalizeSenses(t, elementMap) {
+    var raw = Array.isArray(t.senses) ? t.senses : [t];
+    var seen = {}, out = [];
+    for (var i = 0; i < raw.length; i++) {
+      var s = raw[i];
+      if (!s || !elementMap[s.element] || seen[s.element]) continue;
+      seen[s.element] = true;
+      out.push({ element: s.element, ko: s.ko, verified: !!s.verified });
+    }
+    return out;
+  }
+
   // 기본 사전 + 사용자 사전 → { key: entry }. 같은 용어는 사용자 사전이 우선한다.
   function buildIndex(userTerms, elementMap) {
     var index = {};
@@ -36,13 +50,13 @@
     function add(list, source) {
       for (var i = 0; i < list.length; i++) {
         var t = list[i];
-        if (!t || typeof t.term !== 'string' || !elementMap[t.element]) continue;
+        if (!t || typeof t.term !== 'string') continue;
         var key = norm(t.term);
         if (!key) continue;
+        var senses = normalizeSenses(t, elementMap);
+        if (!senses.length) continue;
         if (source === 'default' && index[key]) continue;
-        index[key] = {
-          term: key, element: t.element, ko: t.ko, verified: !!t.verified, source: source
-        };
+        index[key] = { term: key, senses: senses, source: source };
         var n = key.split(' ').length;
         if (n > maxWords) maxWords = n;
       }
@@ -132,12 +146,18 @@
     while (i < units.length) {
       var hit = matchAt(units, i, idx);
       if (hit) {
-        var e = hit.entry, el = elementMap[e.element];
-        var inScope = el.appliesTo.indexOf(category) !== -1;
+        var e = hit.entry;
+        var senses = e.senses.map(function (s) {
+          var el = elementMap[s.element];
+          return {
+            element: s.element, elementKo: el.ko, ko: s.ko, verified: s.verified,
+            inScope: el.appliesTo.indexOf(category) !== -1
+          };
+        });
+        var anyInScope = senses.some(function (s) { return s.inScope; });
         push({
-          status: inScope ? 'matched' : 'out_of_scope',
-          term: e.term, element: e.element, elementKo: el.ko,
-          ko: e.ko, verified: e.verified, source: e.source
+          status: anyInScope ? 'matched' : 'out_of_scope',
+          term: e.term, source: e.source, senses: senses
         }, units[i].start, units[i + hit.len - 1].end);
         i += hit.len;
         continue;
@@ -158,7 +178,11 @@
       if (e.appliesTo.indexOf(category) !== -1) summary.byElement[e.id] = 0;
     });
     segments.forEach(function (s) {
-      if (s.status === 'matched') { summary.matched++; summary.byElement[s.element]++; }
+      if (s.status === 'matched') {
+        summary.matched++;
+        // 다의어는 해당하는 의미(요소)마다 한 번씩 센다. 분류된 단어 수는 한 번만 센다.
+        s.senses.forEach(function (x) { if (x.inScope) summary.byElement[x.element]++; });
+      }
       else if (s.status === 'unmatched') summary.unmatched++;
       else if (s.status === 'ignored') summary.ignored++;
       else if (s.status === 'out_of_scope') summary.outOfScope++;

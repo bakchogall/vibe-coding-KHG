@@ -1,5 +1,5 @@
 // 프롬프트 분석 로직(1층 사전 일치 + 미분류). DOM·난수·시간을 쓰지 않는 순수 함수라
-// 같은 입력이면 항상 같은 결과가 나온다. js/dictionary.js 를 먼저 불러와야 한다.
+// 같은 입력이면 항상 같은 결과가 나온다. js/dictionary.js, js/patterns.js 를 먼저 불러와야 한다.
 (function () {
   var PC = (window.PromptCheck = window.PromptCheck || {});
 
@@ -112,6 +112,59 @@
     return null;
   }
 
+  // 패턴 수식어: 기능어가 아니고, 그 자리에서 사전 용어로 시작하지 않는 단어
+  function isModifier(units, j, idx) {
+    return !IGNORED_WORDS[units[j].key] && !matchAt(units, j, idx);
+  }
+
+  // i 번째 단어에서 시작하는 가장 긴 패턴 일치. 길이가 같으면 먼저 정의된 규칙이 이긴다.
+  function patternAt(units, i, idx, elementMap) {
+    var P = PC.PATTERNS;
+    if (!P) return null;
+    var best = null;
+    function consider(len, rule, element, ko) {
+      if (!best || len > best.len) best = { len: len, rule: rule, element: element, ko: ko };
+    }
+    var u = units[i];
+
+    (P.regex || []).forEach(function (r) {
+      if (r.re.test(u.key)) consider(1, r.id, r.element, r.ko + ' (패턴 규칙 ' + r.id + ')');
+    });
+
+    var c = P.color;
+    if (c) {
+      var koColor = '색 이름 (패턴 규칙 ' + c.id + ')';
+      if (c.modifiers.indexOf(u.key) !== -1 && u.linkNext &&
+          c.names.indexOf(units[i + 1].key) !== -1) consider(2, c.id, c.element, koColor);
+      if (c.names.indexOf(u.key) !== -1) consider(1, c.id, c.element, koColor);
+    }
+
+    var maxMods = P.maxModifiers || 0;
+    (P.heads || []).forEach(function (h) {
+      for (var k = maxMods; k >= h.min; k--) {
+        var headIdx = i + k;
+        if (headIdx >= units.length) continue;
+        var ok = true;
+        for (var j = i; j < headIdx; j++) {
+          if (!units[j].linkNext || !isModifier(units, j, idx)) { ok = false; break; }
+        }
+        if (!ok) continue;
+        var key = units[headIdx].key;
+        if (key !== h.head && pluralStems(key).indexOf(h.head) === -1) continue;
+        var el = elementMap[h.element];
+        consider(k + 1, h.id, h.element,
+          '"' + h.head + '"로 끝나는 표현 → ' + (el ? el.ko : h.element) + ' (패턴 규칙 ' + h.id + ')');
+        break;
+      }
+    });
+
+    if (!best) return null;
+    var words = [];
+    for (var w = 0; w < best.len; w++) words.push(units[i + w].key);
+    best.term = words.join(' ');
+    return best;
+  }
+
   function analyze(prompt, category, userTerms) {
     if (!CATEGORIES[category]) {
       throw new Error("category must be 'image' or 'video'");
@@ -142,12 +195,27 @@
       cursor = end;
     }
 
+    // i 번째 단어에서 시작하는 분류. 사전 일치가 먼저이고, 없을 때만 패턴을 본다.
+    function classifyAt(pos) {
+      var hit = matchAt(units, pos, idx);
+      if (hit) {
+        return { len: hit.len, term: hit.entry.term, source: hit.entry.source, senses: hit.entry.senses };
+      }
+      var pat = patternAt(units, pos, idx, elementMap);
+      if (pat) {
+        return {
+          len: pat.len, term: pat.term, source: 'pattern', rule: pat.rule,
+          senses: [{ element: pat.element, ko: pat.ko, verified: true }]
+        };
+      }
+      return null;
+    }
+
     var i = 0;
     while (i < units.length) {
-      var hit = matchAt(units, i, idx);
+      var hit = classifyAt(i);
       if (hit) {
-        var e = hit.entry;
-        var senses = e.senses.map(function (s) {
+        var senses = hit.senses.map(function (s) {
           var el = elementMap[s.element];
           return {
             element: s.element, elementKo: el.ko, ko: s.ko, verified: s.verified,
@@ -155,17 +223,19 @@
           };
         });
         var anyInScope = senses.some(function (s) { return s.inScope; });
-        push({
+        var seg = {
           status: anyInScope ? 'matched' : 'out_of_scope',
-          term: e.term, source: e.source, senses: senses
-        }, units[i].start, units[i + hit.len - 1].end);
+          term: hit.term, source: hit.source, senses: senses
+        };
+        if (hit.rule) seg.rule = hit.rule;
+        push(seg, units[i].start, units[i + hit.len - 1].end);
         i += hit.len;
         continue;
       }
       // 못 찾은 단어: 같은 token(하이픈 연결) 안의 연속된 미분류는 하나로 묶는다.
       var j = i;
       while (j + 1 < units.length && units[j + 1].token === units[i].token &&
-             !matchAt(units, j + 1, idx)) j++;
+             !classifyAt(j + 1)) j++;
       var single = j === i && parsed.tokenCount[units[i].token] === 1;
       push({ status: single && IGNORED_WORDS[units[i].key] ? 'ignored' : 'unmatched' },
         units[i].start, units[j].end);
@@ -173,13 +243,14 @@
     }
     pushSeparator(prompt.length);
 
-    var summary = { matched: 0, unmatched: 0, ignored: 0, outOfScope: 0, byElement: {} };
+    var summary = { matched: 0, fromPattern: 0, unmatched: 0, ignored: 0, outOfScope: 0, byElement: {} };
     elements.forEach(function (e) {
       if (e.appliesTo.indexOf(category) !== -1) summary.byElement[e.id] = 0;
     });
     segments.forEach(function (s) {
       if (s.status === 'matched') {
         summary.matched++;
+        if (s.source === 'pattern') summary.fromPattern++; // matched 중 패턴으로 분류된 수
         // 다의어는 해당하는 의미(요소)마다 한 번씩 센다. 분류된 단어 수는 한 번만 센다.
         s.senses.forEach(function (x) { if (x.inScope) summary.byElement[x.element]++; });
       }

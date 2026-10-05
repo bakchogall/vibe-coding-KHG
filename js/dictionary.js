@@ -176,4 +176,85 @@
     t('spinning', 'subject_motion', '회전하는 동작'),
     t('floating', 'subject_motion', '떠 있거나 떠다니는 동작')
   ];
+
+  // ---- 주제: 영어가 낯선 사람이 모를 만한 단어 위주 ----
+  // 주제 = 화면에 그려지는 대상. 흔한 단어(cat, car 등)는 일부러 넣지 않는다.
+  // 사전·패턴에서 분류되지 않은 내용어는 주제/배경 후보로 본다(분석 단계에서 처리).
+  // 고유명사(유명인·브랜드·작품 속 캐릭터)와 화가 이름은 넣지 않는다.
+  function subjects(pairs) {
+    return pairs.map(function (p) { return t(p[0], 'subject', p[1]); });
+  }
+
+  var SUBJECT_TERMS = [].concat(
+    // 동물
+    subjects([
+      ['hedgehog', '고슴도치'], ['hippopotamus', '하마'], ['rhinoceros', '코뿔소'],
+      ['flamingo', '홍학'], ['peacock', '공작'], ['cheetah', '치타'], ['leopard', '표범'],
+      ['jellyfish', '해파리'], ['seahorse', '해마'], ['dragonfly', '잠자리'],
+      ['ladybug', '무당벌레'], ['squirrel', '다람쥐'], ['hawk', '매'], ['lobster', '바닷가재']
+    ]),
+    // 가상·판타지
+    subjects([
+      ['griffin', '그리핀(독수리 머리와 사자 몸을 가진 전설의 생물)'],
+      ['centaur', '켄타우로스(반인반마)'], ['golem', '골렘(흙·돌로 만든 인조 거인)'],
+      ['ogre', '오거(식인 거인)'], ['troll', '트롤'], ['goblin', '고블린'],
+      ['phoenix', '불사조'], ['dwarf', '드워프'], ['elf', '엘프'], ['werewolf', '늑대인간'],
+      ['unicorn', '유니콘'], ['cyborg', '사이보그'], ['android', '안드로이드(인간형 로봇)']
+    ]),
+    // 사람
+    subjects([
+      ['samurai', '사무라이'], ['knight', '기사'], ['astronaut', '우주비행사'],
+      ['detective', '탐정'], ['firefighter', '소방관'], ['teenager', '십대 청소년'],
+      ['elderly person', '노인'], ['crowd', '군중']
+    ]),
+    // 탈것
+    subjects([
+      ['locomotive', '기관차'], ['carriage', '마차'], ['tram', '트램, 노면전차'],
+      ['tractor', '트랙터'], ['canoe', '카누'], ['yacht', '요트'], ['submarine', '잠수함'],
+      ['hot air balloon', '열기구']
+    ]),
+    // 사물
+    subjects([
+      ['chandelier', '샹들리에'], ['lantern', '등불'], ['teapot', '찻주전자'],
+      ['telescope', '망원경'], ['vase', '꽃병'], ['suitcase', '여행 가방'],
+      ['statue', '조각상'], ['violin', '바이올린']
+    ]),
+    // 의류·소품
+    subjects([
+      ['armor', '갑옷'], ['shield', '방패'], ['helmet', '헬멧'], ['scarf', '스카프, 목도리'],
+      ['glove', '장갑'], ['crown', '왕관'], ['necklace', '목걸이']
+    ]),
+    // 식물·꽃
+    subjects([
+      ['cactus', '선인장'], ['bonsai', '분재'], ['fern', '양치식물(고사리류)'],
+      ['lotus', '연꽃'], ['bouquet', '꽃다발'], ['daisy', '데이지'], ['tulip', '튤립'],
+      ['sunflower', '해바라기']
+    ]),
+    // 위 단어 중 불규칙 복수형(자동 복수형 처리로는 찾지 못하는 것)
+    subjects([
+      ['elves', '엘프들(elf의 복수)'], ['dwarves', '드워프들(dwarf의 복수)'],
+      ['werewolves', '늑대인간들(werewolf의 복수)']
+    ])
+  );
+
+  // 다의어: 사물·식물과 색 이름이 겹치는 단어 (주제 + 색). 이 단어들은 패턴 색 목록에서 제외되어 있다.
+  var COLOR_OVERLAP_TERMS = [
+    m('orange', [['subject', '오렌지(과일)'], ['color', '주황색']]),
+    m('plum', [['subject', '자두'], ['color', '자두 같은 짙은 보라색']]),
+    m('peach', [['subject', '복숭아'], ['color', '복숭아색(연한 분홍빛 주황색)']]),
+    m('lime', [['subject', '라임(과일)'], ['color', '라임색(밝은 연두색)']]),
+    m('tomato', [['subject', '토마토'], ['color', '토마토 같은 붉은색']]),
+    m('chocolate', [['subject', '초콜릿'], ['color', '초콜릿색(짙은 갈색)']]),
+    m('mint', [['subject', '민트(허브)'], ['color', '민트색(연한 청록색)']]),
+    m('olive', [['subject', '올리브(열매)'], ['color', '올리브색(탁한 녹색)']]),
+    m('rose', [['subject', '장미'], ['color', '장미색(붉은 분홍색)']]),
+    m('orchid', [['subject', '난초'], ['color', '난초색(연한 보라색)']]),
+    m('violet', [['subject', '제비꽃'], ['color', '제비꽃색(보라색)']]),
+    m('lilac', [['subject', '라일락'], ['color', '라일락색(연한 보라색)']]),
+    m('lavender', [['subject', '라벤더(식물)'], ['color', '라벤더색(연한 보라색)']]),
+    m('coral', [['subject', '산호'], ['color', '산호색(분홍빛 주황색)']]),
+    m('amber', [['subject', '호박(나무 수지가 굳은 보석)'], ['color', '호박색(노르스름한 주황색)']])
+  ];
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS);
 })();

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PromptCheck</title>
+  <meta name="description" content="챗봇이 써 준 생성 AI용 영어 프롬프트를 붙여넣어 요소별 역할과 빠진 요소·충돌·모호한 표현을 점검합니다.">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="page-header">
+    <h1>PromptCheck</h1>
+    <p class="lead">챗봇이 써 준 생성 AI용 영어 프롬프트를 붙여넣으면, 각 부분의 역할과 빠진 요소·충돌·모호한 표현을 규칙으로 점검합니다.</p>
+  </header>
+
+  <main>
+    <noscript><p class="notice-box">이 페이지는 JavaScript가 필요합니다.</p></noscript>
+
+    <section class="card" aria-labelledby="input-title">
+      <h2 id="input-title">1. 프롬프트 입력</h2>
+      <div class="controls">
+        <label class="field">
+          <span class="field-label">프롬프트 종류</span>
+          <select id="category"></select>
+        </label>
+        <label class="field">
+          <span class="field-label">AI 모델</span>
+          <select id="model"></select>
+        </label>
+      </div>
+      <label class="field" for="prompt">
+        <span class="field-label">영어 프롬프트</span>
+      </label>
+      <textarea id="prompt" rows="6" maxlength="5000" spellcheck="false"
+        placeholder="예: A beautiful griffin without wings, warm tone, cool tone, 85mm, maybe sunset"></textarea>
+      <p class="counter" id="counter" aria-live="off">0 / 5000</p>
+    </section>
+
+    <div id="empty" class="card empty">프롬프트를 입력하면 분석 결과가 여기에 표시됩니다.</div>
+
+    <div id="results" hidden>
+      <section class="card" aria-labelledby="summary-title">
+        <h2 id="summary-title">2. 분류 요약</h2>
+        <p id="summary" aria-live="polite"></p>
+        <ul id="legend" class="legend"></ul>
+      </section>
+
+      <section class="card" aria-labelledby="anatomy-title">
+        <h2 id="anatomy-title">3. 해부 결과</h2>
+        <p class="hint">단어나 구절을 누르면 설명이 아래에 나타납니다. 색과 함께 요소 이름도 표시됩니다.</p>
+        <div id="anatomy" class="anatomy" role="group" aria-label="요소별로 나눈 프롬프트"></div>
+        <div id="detail" class="detail" aria-live="polite"></div>
+      </section>
+
+      <section class="card" aria-labelledby="warn-title">
+        <h2 id="warn-title">4. 경고</h2>
+        <div id="warnings"></div>
+      </section>
+
+      <section class="card" aria-labelledby="terms-title">
+        <h2 id="terms-title">5. 용어 설명</h2>
+        <ul id="terms" class="terms"></ul>
+      </section>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <p>이 도구는 용어 사전과 고정된 규칙으로만 점검합니다. 프롬프트가 생성 AI에서 <strong>잘 작동하는지는 보장하지 못하고</strong>, 위험 신호를 알려 줄 뿐입니다. 사전에 없는 표현은 분류하지 못하거나 "빠졌다"고 잘못 안내할 수 있습니다.</p>
+  </footer>
+
+  <script src="js/dictionary.js"></script>
+  <script src="js/patterns.js"></script>
+  <script src="js/analyzer.js"></script>
+  <script src="js/checks.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

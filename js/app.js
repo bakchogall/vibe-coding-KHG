@@ -1,0 +1,308 @@
+// 해부 화면: 입력 → analyze → check → 화면 그리기. 분석·경고 로직은 다른 파일에 있고 여기서는 화면만 다룬다.
+// 사용자 입력은 textContent 로만 넣는다(innerHTML 사용 금지).
+(function () {
+  var PC = window.PromptCheck;
+  var MAX_LEN = 5000;
+
+  var CATEGORIES = [
+    { id: 'image', label: '이미지 생성용 프롬프트' },
+    { id: 'video', label: '영상 생성용 프롬프트' }
+  ];
+  // 모델은 카테고리 안에서 고른다. 1단계 범위에서는 '모델 지정 안 함(공통)'만 둔다.
+  var MODELS = {
+    image: [{ id: 'none', label: '모델 지정 안 함(공통)' }],
+    video: [{ id: 'none', label: '모델 지정 안 함(공통)' }]
+  };
+  var LEVEL_LABEL = { warning: '경고', notice: '안내' };
+  var SOURCE_LABEL = { default: '기본 사전', user: '사용자 사전', pattern: '패턴 규칙(추정)' };
+
+  var state = { category: 'image', model: 'none', analysis: null, selected: -1, highlighted: [] };
+
+  var elementKo = {};
+  (PC.ELEMENTS || []).forEach(function (e) { elementKo[e.id] = e.ko; });
+
+  function $(id) { return document.getElementById(id); }
+
+  // 작은 DOM 헬퍼: h('div', { class: 'x', text: '...' }, [자식...])
+  function h(tag, props, children) {
+    var e = document.createElement(tag);
+    if (props) {
+      Object.keys(props).forEach(function (k) {
+        var v = props[k];
+        if (v === null || v === undefined) return;
+        if (k === 'class') e.className = v;
+        else if (k === 'text') e.textContent = v;
+        else if (k === 'style') e.setAttribute('style', v);
+        else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
+        else e.setAttribute(k, v);
+      });
+    }
+    (children || []).forEach(function (c) {
+      if (c === null || c === undefined) return;
+      e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+    });
+    return e;
+  }
+
+  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
+
+  function elVar(id) { return 'var(--c-' + id + ')'; }
+
+  function elementChip(id, zero) {
+    return h('span', {
+      class: 'chip' + (zero ? ' zero' : ''),
+      style: '--chip-bg:' + elVar(id),
+      text: elementKo[id] || id
+    });
+  }
+
+  // 이 구간에서 현재 카테고리에 해당하는 의미들
+  function activeSenses(seg) {
+    return (seg.senses || []).filter(function (s) { return s.inScope; });
+  }
+
+  function segBackground(seg) {
+    var s = activeSenses(seg);
+    if (!s.length) return '';
+    if (s.length === 1) return elVar(s[0].element);
+    var step = 100 / s.length, parts = [];
+    s.forEach(function (x, i) {
+      parts.push(elVar(x.element) + ' ' + (i * step) + '% ' + ((i + 1) * step) + '%');
+    });
+    return 'linear-gradient(90deg, ' + parts.join(', ') + ')';
+  }
+
+  function segLabel(seg) {
+    if (seg.status === 'matched') {
+      var names = activeSenses(seg).map(function (s) { return s.elementKo; }).join('·');
+      return names + (seg.source === 'pattern' ? ' (추정)' : '');
+    }
+    if (seg.status === 'out_of_scope') return '영상 전용';
+    return '';
+  }
+
+  function segAria(seg) {
+    if (seg.status === 'unmatched') return seg.text + ': 미분류';
+    return seg.text + ': ' + segLabel(seg);
+  }
+
+  // ---- 그리기 ----
+
+  function renderSummary(analysis) {
+    var s = analysis.summary;
+    var parts = ['분류됨 ' + s.matched + '개' + (s.fromPattern ? ' (그중 패턴 추정 ' + s.fromPattern + '개)' : ''),
+      '미분류 ' + s.unmatched + '개'];
+    if (s.outOfScope) parts.push('이 종류에 해당 없음 ' + s.outOfScope + '개');
+    $('summary').textContent = parts.join(' · ');
+
+    var legend = $('legend');
+    clear(legend);
+    (PC.ELEMENTS || []).forEach(function (e) {
+      if (!(e.id in s.byElement)) return;
+      var n = s.byElement[e.id];
+      var chip = h('span', {
+        class: 'chip' + (n === 0 ? ' zero' : ''),
+        style: '--chip-bg:' + elVar(e.id),
+        text: e.ko + ' ' + n
+      });
+      legend.appendChild(h('li', null, [chip]));
+    });
+  }
+
+  function renderAnatomy(analysis) {
+    var box = $('anatomy');
+    clear(box);
+    analysis.segments.forEach(function (seg, i) {
+      if (seg.status === 'separator') {
+        // 줄바꿈은 <br> 로, 나머지 공백·구두점은 그대로 둔다.
+        var lines = seg.text.split('\n');
+        lines.forEach(function (line, k) {
+          if (k > 0) box.appendChild(h('br'));
+          if (line) box.appendChild(h('span', { class: 'sep', text: line }));
+        });
+        return;
+      }
+      var cls = 'seg ' + seg.status + (seg.source === 'pattern' ? ' pattern' : '');
+      var kids = [h('span', { class: 'seg-text', text: seg.text }), h('span', { class: 'seg-label', text: segLabel(seg) })];
+      if (seg.status === 'ignored') {
+        box.appendChild(h('span', { class: cls, 'data-i': i }, kids));
+        return;
+      }
+      var bg = segBackground(seg);
+      box.appendChild(h('button', {
+        type: 'button', class: cls, 'data-i': i, 'aria-label': segAria(seg),
+        style: bg ? '--seg-bg:' + bg : null,
+        onclick: function () { select(i); }
+      }, kids));
+    });
+  }
+
+  function senseRow(s) {
+    var kids = [elementChip(s.element), h('span', { text: s.ko })];
+    if (!s.verified) kids.push(h('span', { class: 'badge', text: '검증 필요' }));
+    if (!s.inScope) kids.push(h('span', { class: 'badge', text: '이 종류에서는 분석하지 않음' }));
+    return h('div', { class: 'sense' }, kids);
+  }
+
+  function renderDetail() {
+    var box = $('detail');
+    clear(box);
+    var analysis = state.analysis;
+    var seg = analysis && state.selected >= 0 ? analysis.segments[state.selected] : null;
+    if (!seg) {
+      box.appendChild(h('p', { class: 'hint', text: '단어를 눌러 보세요.' }));
+      return;
+    }
+    box.appendChild(h('h3', { text: seg.text }));
+    if (seg.status === 'unmatched') {
+      box.appendChild(h('p', { class: 'meta', text: '사전과 패턴 규칙에 없는 표현입니다. 주제나 배경을 가리키는 말일 수 있어 "주제/배경 후보"로 봅니다.' }));
+      // 3단계에서 사용자가 요청할 때만 외부 조회를 하는 버튼이 들어갈 자리
+      box.appendChild(h('button', { type: 'button', class: 'btn small', disabled: 'disabled', text: '외부에서 찾아보기 (준비 중)' }));
+      return;
+    }
+    var meta = '출처: ' + (SOURCE_LABEL[seg.source] || seg.source);
+    if (seg.rule) meta += ' · 규칙 ' + seg.rule;
+    box.appendChild(h('p', { class: 'meta', text: meta }));
+    seg.senses.forEach(function (s) { box.appendChild(senseRow(s)); });
+    if (seg.senses.length > 1) {
+      box.appendChild(h('p', { class: 'meta', text: '뜻이 여러 개인 단어입니다. 문맥에 맞는 쪽으로 읽으세요.' }));
+    }
+  }
+
+  function renderWarnings(analysis) {
+    var box = $('warnings');
+    clear(box);
+    var result = PC.check(analysis);
+    if (!result.warnings.length) {
+      box.appendChild(h('p', { class: 'ok-box', text: '발견된 경고가 없습니다. 다만 사전에 없는 표현은 점검하지 못합니다.' }));
+      return;
+    }
+    var list = h('ul', { class: 'warn-list' });
+    result.warnings.forEach(function (w) {
+      var head = [h('span', { class: 'level', text: LEVEL_LABEL[w.level] || w.level })];
+      if (w.verified === false) head.push(h('span', { class: 'badge', text: '검증 필요' }));
+      if (typeof w.start === 'number') {
+        head.push(h('button', {
+          type: 'button', class: 'btn small', text: '위치 보기',
+          onclick: function () { highlightRange(w.start, w.end); }
+        }));
+      }
+      list.appendChild(h('li', { class: 'warn-item ' + w.level }, [
+        h('div', { class: 'warn-head' }, head),
+        h('p', { text: w.message })
+      ]));
+    });
+    box.appendChild(list);
+  }
+
+  function renderTerms(analysis) {
+    var list = $('terms');
+    clear(list);
+    var seen = {}, any = false;
+    analysis.segments.forEach(function (seg, i) {
+      if ((seg.status !== 'matched' && seg.status !== 'out_of_scope') || seen[seg.term]) return;
+      seen[seg.term] = true;
+      any = true;
+      var senses = seg.senses.map(function (s) {
+        var kids = [elementChip(s.element), h('span', { text: ' ' + s.ko })];
+        if (!s.verified) kids.push(h('span', { class: 'badge', text: '검증 필요' }));
+        if (!s.inScope) kids.push(h('span', { class: 'badge', text: '이 종류에서는 분석하지 않음' }));
+        return h('p', { class: 'term-sense' }, kids);
+      });
+      list.appendChild(h('li', null, [
+        h('div', { class: 'term-name' }, [
+          h('button', { type: 'button', text: seg.text, onclick: function () { select(i); } }),
+          seg.source === 'pattern' ? h('span', { class: 'badge', text: '추정' }) : null
+        ]),
+        h('div', null, senses)
+      ]));
+    });
+    if (!any) list.appendChild(h('li', null, [h('span', { class: 'ok-box', text: '사전·패턴으로 분류된 용어가 없습니다.' })]));
+  }
+
+  function segmentNode(i) {
+    return $('anatomy').querySelector('[data-i="' + i + '"]');
+  }
+
+  function applySelectionClasses() {
+    var nodes = $('anatomy').querySelectorAll('.seg');
+    Array.prototype.forEach.call(nodes, function (n) {
+      var i = Number(n.getAttribute('data-i'));
+      n.classList.toggle('sel', i === state.selected);
+      n.classList.toggle('hl', state.highlighted.indexOf(i) !== -1);
+    });
+  }
+
+  function select(i) {
+    state.selected = i;
+    state.highlighted = [];
+    applySelectionClasses();
+    renderDetail();
+    var node = segmentNode(i);
+    if (node && node.scrollIntoView) node.scrollIntoView({ block: 'nearest' });
+  }
+
+  function highlightRange(start, end) {
+    var idxs = [];
+    state.analysis.segments.forEach(function (seg, i) {
+      if (seg.status !== 'separator' && seg.start < end && seg.end > start) idxs.push(i);
+    });
+    state.highlighted = idxs;
+    state.selected = -1;
+    applySelectionClasses();
+    renderDetail();
+    if (idxs.length) {
+      var node = segmentNode(idxs[0]);
+      if (node && node.scrollIntoView) node.scrollIntoView({ block: 'center' });
+    }
+  }
+
+  function analyzeAndRender() {
+    var text = $('prompt').value;
+    $('counter').textContent = text.length + ' / ' + MAX_LEN;
+    var empty = !text.trim();
+    $('empty').hidden = !empty;
+    $('results').hidden = empty;
+    if (empty) { state.analysis = null; return; }
+    var analysis = PC.analyze(text, state.category);
+    state.analysis = analysis;
+    state.selected = -1;
+    state.highlighted = [];
+    renderSummary(analysis);
+    renderAnatomy(analysis);
+    renderDetail();
+    renderWarnings(analysis);
+    renderTerms(analysis);
+  }
+
+  // ---- 메뉴 ----
+
+  function fillSelect(sel, items, value) {
+    clear(sel);
+    items.forEach(function (it) {
+      var o = h('option', { value: it.id, text: it.label });
+      if (it.id === value) o.selected = true;
+      sel.appendChild(o);
+    });
+  }
+
+  function init() {
+    fillSelect($('category'), CATEGORIES, state.category);
+    fillSelect($('model'), MODELS[state.category], state.model);
+
+    $('category').addEventListener('change', function (e) {
+      state.category = e.target.value;
+      state.model = MODELS[state.category][0].id;
+      fillSelect($('model'), MODELS[state.category], state.model);
+      analyzeAndRender();
+    });
+    $('model').addEventListener('change', function (e) {
+      state.model = e.target.value;
+      analyzeAndRender();
+    });
+    $('prompt').addEventListener('input', analyzeAndRender);
+    analyzeAndRender();
+  }
+
+  init();
+})();

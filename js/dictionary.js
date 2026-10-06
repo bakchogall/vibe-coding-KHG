@@ -72,6 +72,7 @@
     t('minimalist', 'style', '요소를 최소화한 단순한 스타일'),
     t('3d render', 'style', '3D 렌더링 느낌'),
     t('pixel art', 'style', '픽셀 아트'),
+    t('sketch', 'style', '연필·펜으로 빠르게 그린 듯한 선 위주의 스케치 느낌'),
 
     // 조명
     t('golden hour', 'lighting', '해 뜬 직후·지기 직전의 따뜻한 빛'),

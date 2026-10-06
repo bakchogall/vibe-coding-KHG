@@ -1,5 +1,6 @@
-/* PromptCheck 스타일. 색은 :root 토큰으로 정의하고 다크 모드에서 다시 정의한다. */
+/* PromptCheck 스타일. 라이트 모드 전용(사용자 선호). 색은 :root 토큰으로 정의한다. */
 :root {
+  color-scheme: light;
   --bg: #f5f5f2;
   --surface: #ffffff;
   --text: #1c1c1a;
@@ -25,35 +26,6 @@
   --c-intensity: #d7ccc8;
   --c-camera_motion: #b2dfdb;
   --c-subject_motion: #c5cae9;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --bg: #161614;
-    --surface: #222220;
-    --text: #efefea;
-    --muted: #b0b0a8;
-    --border: #3d3d39;
-    --accent: #7fb1f0;
-    --accent-text: #101010;
-    --warn-bg: #3d1f1c;
-    --warn-border: #e5776b;
-    --notice-bg: #1d2735;
-    --notice-border: #6f93c9;
-    --sel: #7fb1f0;
-
-    --c-subject: #6b4a1f;
-    --c-setting: #2f5a35;
-    --c-style: #5a2f66;
-    --c-lighting: #6b6218;
-    --c-camera: #1f4d66;
-    --c-composition: #6b3a2a;
-    --c-color: #6b2f47;
-    --c-quality: #3d4a50;
-    --c-intensity: #4a3f3b;
-    --c-camera_motion: #1f5550;
-    --c-subject_motion: #333a6b;
-  }
 }
 
 * { box-sizing: border-box; }
@@ -83,7 +55,7 @@ h2 { font-size: 1.05rem; margin: 0 0 12px; }
 }
 .empty { color: var(--muted); text-align: center; }
 
-.controls { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.controls { max-width: 360px; margin-bottom: 12px; }
 .field { display: block; }
 .field-label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
 
@@ -192,7 +164,7 @@ button.seg { appearance: none; }
 .page-footer { color: var(--muted); font-size: 0.85rem; padding-top: 24px; }
 
 @media (max-width: 560px) {
-  .controls { grid-template-columns: 1fr; }
+  .controls { max-width: none; }
   .terms li { grid-template-columns: 1fr; }
   body { padding: 0 12px 24px; }
 }

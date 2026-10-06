@@ -8,15 +8,10 @@
     { id: 'image', label: '이미지 생성용 프롬프트' },
     { id: 'video', label: '영상 생성용 프롬프트' }
   ];
-  // 모델은 카테고리 안에서 고른다. 1단계 범위에서는 '모델 지정 안 함(공통)'만 둔다.
-  var MODELS = {
-    image: [{ id: 'none', label: '모델 지정 안 함(공통)' }],
-    video: [{ id: 'none', label: '모델 지정 안 함(공통)' }]
-  };
   var LEVEL_LABEL = { warning: '경고', notice: '안내' };
   var SOURCE_LABEL = { default: '기본 사전', user: '사용자 사전', pattern: '패턴 규칙(추정)' };
 
-  var state = { category: 'image', model: 'none', analysis: null, selected: -1, highlighted: [] };
+  var state = { category: 'image', analysis: null, selected: -1, highlighted: [] };
 
   var elementKo = {};
   (PC.ELEMENTS || []).forEach(function (e) { elementKo[e.id] = e.ko; });
@@ -288,16 +283,9 @@
 
   function init() {
     fillSelect($('category'), CATEGORIES, state.category);
-    fillSelect($('model'), MODELS[state.category], state.model);
 
     $('category').addEventListener('change', function (e) {
       state.category = e.target.value;
-      state.model = MODELS[state.category][0].id;
-      fillSelect($('model'), MODELS[state.category], state.model);
-      analyzeAndRender();
-    });
-    $('model').addEventListener('change', function (e) {
-      state.model = e.target.value;
       analyzeAndRender();
     });
     $('prompt').addEventListener('input', analyzeAndRender);

@@ -175,3 +175,36 @@ button.seg { appearance: none; }
 .lookup .result p { margin: 0 0 6px; }
 .lookup .result p:last-child { margin-bottom: 0; }
 .lookup a { color: var(--accent); }
+
+/* 의도 반영 점검: 체크리스트 */
+.wanted { margin-top: 12px; border-top: 1px solid var(--border); padding-top: 10px; }
+.wanted summary { cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+.wanted .hint { margin: 6px 0 8px; }
+.wanted-list { display: flex; flex-wrap: wrap; gap: 6px 14px; }
+.want-item { display: inline-flex; align-items: center; gap: 6px; cursor: pointer; }
+.want-item input { width: 18px; height: 18px; }
+
+/* "이렇게 읽힌다" 표 */
+.reading-table { width: 100%; border-collapse: collapse; }
+.reading-table th, .reading-table td { text-align: left; vertical-align: top; padding: 8px 6px; border-top: 1px solid var(--border); }
+.reading-table tr:first-child th, .reading-table tr:first-child td { border-top: none; }
+.reading-table th { width: 170px; font-weight: 400; white-space: nowrap; }
+.reading-table td { display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+.reading-table tr.missing { background: var(--warn-bg); }
+.reading-table .none { color: var(--muted); }
+.phrase {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 0 8px;
+  cursor: pointer;
+}
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (max-width: 560px) {
+  .reading-table, .reading-table tbody, .reading-table tr, .reading-table th, .reading-table td { display: block; width: 100%; }
+  .reading-table th { padding-bottom: 0; }
+  .reading-table td { padding-top: 2px; border-top: none; }
+  .reading-table tr { border-top: 1px solid var(--border); padding: 4px 0; }
+  .reading-table tr:first-child { border-top: none; }
+}

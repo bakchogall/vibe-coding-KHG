@@ -11,7 +11,7 @@
   var LEVEL_LABEL = { warning: '경고', notice: '안내' };
   var SOURCE_LABEL = { default: '기본 사전', user: '사용자 사전', pattern: '패턴 규칙(추정)' };
 
-  var state = { category: 'image', analysis: null, selected: -1, highlighted: [] };
+  var state = { category: 'image', analysis: null, selected: -1, highlighted: [], wanted: [] };
 
   var elementKo = {};
   (PC.ELEMENTS || []).forEach(function (e) { elementKo[e.id] = e.ko; });
@@ -254,7 +254,7 @@
   function renderWarnings(analysis) {
     var box = $('warnings');
     clear(box);
-    var result = PC.check(analysis);
+    var result = PC.check(analysis, { wanted: state.wanted });
     if (!result.warnings.length) {
       box.appendChild(h('p', { class: 'ok-box', text: '발견된 경고가 없습니다. 다만 사전에 없는 표현은 점검하지 못합니다.' }));
       return;
@@ -275,6 +275,94 @@
       ]));
     });
     box.appendChild(list);
+  }
+
+  // ---- 의도 반영 점검: 체크리스트 + "이렇게 읽힌다" 표 ----
+
+  function applicableElements() {
+    return (PC.ELEMENTS || []).filter(function (e) { return e.appliesTo.indexOf(state.category) !== -1; });
+  }
+
+  function renderWantedOptions() {
+    var box = $('wanted');
+    clear(box);
+    applicableElements().forEach(function (e) {
+      var input = h('input', { type: 'checkbox', value: e.id, id: 'want-' + e.id });
+      input.checked = state.wanted.indexOf(e.id) !== -1;
+      input.addEventListener('change', function () {
+        var i = state.wanted.indexOf(e.id);
+        if (input.checked && i === -1) state.wanted.push(e.id);
+        if (!input.checked && i !== -1) state.wanted.splice(i, 1);
+        if (state.analysis) { renderReading(state.analysis); renderWarnings(state.analysis); }
+      });
+      box.appendChild(h('label', { class: 'want-item', for: 'want-' + e.id }, [input, elementChip(e.id)]));
+    });
+  }
+
+  function phraseButton(item) {
+    return h('button', {
+      type: 'button', class: 'phrase', onclick: function () { select(item.i); },
+      text: item.text + (item.est ? ' (추정)' : '')
+    });
+  }
+
+  function renderReading(analysis) {
+    var box = $('reading');
+    clear(box);
+    var byEl = {}, seen = {};
+    var unmatched = [], unSeen = {}, outScope = [], outSeen = {};
+    analysis.segments.forEach(function (seg, i) {
+      var key = seg.text.toLowerCase();
+      if (seg.status === 'matched') {
+        activeSenses(seg).forEach(function (s) {
+          var k = s.element + '|' + key;
+          if (seen[k]) return;
+          seen[k] = true;
+          (byEl[s.element] = byEl[s.element] || []).push({ text: seg.text, i: i, est: seg.source === 'pattern' });
+        });
+      } else if (seg.status === 'unmatched') {
+        if (/^\d+$/.test(key) || unSeen[key]) return;
+        unSeen[key] = true;
+        unmatched.push({ text: seg.text, i: i });
+      } else if (seg.status === 'out_of_scope') {
+        if (outSeen[key]) return;
+        outSeen[key] = true;
+        outScope.push({ text: seg.text, i: i });
+      }
+    });
+
+    var tbody = h('tbody');
+    function row(headKids, cellKids, cls) {
+      tbody.appendChild(h('tr', { class: cls || null }, [h('th', { scope: 'row' }, headKids), h('td', null, cellKids)]));
+    }
+    function none(text) { return h('span', { class: 'none', text: text }); }
+
+    applicableElements().forEach(function (e) {
+      var items = byEl[e.id] || [];
+      var wanted = state.wanted.indexOf(e.id) !== -1;
+      var head = [elementChip(e.id)];
+      if (wanted) head.push(h('span', { class: 'badge', text: '체크함' }));
+      var cells;
+      if (items.length) {
+        cells = items.map(phraseButton);
+      } else if (e.id === 'subject' && unmatched.length) {
+        cells = [none('(사전에 없음 — 아래 "분류 못 한 단어"가 주제일 수 있습니다)')];
+      } else {
+        cells = [none(wanted ? '(없음 — 체크한 요소가 발견되지 않았습니다)' : '(없음)')];
+      }
+      row(head, cells, wanted && !items.length && !(e.id === 'subject' && unmatched.length) ? 'missing' : null);
+    });
+
+    row([h('span', { class: 'chip plain', text: '분류 못 한 단어' })],
+      unmatched.length ? unmatched.map(phraseButton) : [none('(없음)')]);
+    if (outScope.length) {
+      row([h('span', { class: 'chip plain', text: '이 종류에서 분석 안 함' })], outScope.map(phraseButton));
+    }
+
+    box.appendChild(h('table', { class: 'reading-table' }, [
+      h('caption', { class: 'sr-only', text: '요소별로 프롬프트에서 발견된 표현' }),
+      tbody
+    ]));
   }
 
   function renderTerms(analysis) {
@@ -353,6 +441,7 @@
     renderSummary(analysis);
     renderAnatomy(analysis);
     renderDetail();
+    renderReading(analysis);
     renderWarnings(analysis);
     renderTerms(analysis);
   }
@@ -373,8 +462,13 @@
 
     $('category').addEventListener('change', function (e) {
       state.category = e.target.value;
+      // 이 종류에 없는 요소(영상 전용 움직임 등)는 체크 목록에서 뺀다.
+      var ok = applicableElements().map(function (el) { return el.id; });
+      state.wanted = state.wanted.filter(function (id) { return ok.indexOf(id) !== -1; });
+      renderWantedOptions();
       analyzeAndRender();
     });
+    renderWantedOptions();
     $('prompt').addEventListener('input', analyzeAndRender);
     analyzeAndRender();
   }

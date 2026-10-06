@@ -324,5 +324,33 @@
     ])
   );
 
-  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS);
+  // ---- 부정형 움직임 지시 (영상용) ----
+  // "No camera movement"처럼 no 가 붙어야 움직임 요소로서 뜻이 생기는 표현.
+  // camera movement 단독은 뜻이 애매해 넣지 않고, no 가 붙은 형태만 등록한다.
+  // 카메라인지 대상인지 문맥에 따라 갈리는 일반형(no movement, no motion)은 두 의미를 모두 둔다.
+  var NO_CAMERA = '카메라가 움직이지 않는 고정된 화면을 요구함';
+  var NEGATED_MOTION_TERMS = [
+    t('no camera movement', 'camera_motion', NO_CAMERA),
+    t('no camera motion', 'camera_motion', NO_CAMERA),
+    t('no camera shake', 'camera_motion', '카메라 흔들림 없이 안정된 화면을 요구함'),
+    t('no camera zoom', 'camera_motion', '확대·축소 없이 같은 화각을 유지하도록 요구함'),
+    t('no camera pan', 'camera_motion', '카메라가 좌우로 돌지 않도록 요구함'),
+    t('no zoom', 'camera_motion', '확대·축소 없이 같은 화각을 유지하도록 요구함'),
+    t('no pan', 'camera_motion', '카메라가 좌우로 돌지 않도록 요구함'),
+    t('no panning', 'camera_motion', '카메라가 좌우로 돌지 않도록 요구함'),
+    t('no tilt', 'camera_motion', '카메라가 위아래로 꺾이지 않도록 요구함'),
+    t('no character movement', 'subject_motion', '캐릭터가 움직이지 않도록 요구함'),
+    t('no subject movement', 'subject_motion', '대상이 움직이지 않도록 요구함'),
+    t('no object movement', 'subject_motion', '사물이 움직이지 않도록 요구함'),
+    m('no movement', [
+      ['camera_motion', '카메라 움직임 없음을 요구하는 표현'],
+      ['subject_motion', '대상의 움직임 없음을 요구하는 표현']
+    ]),
+    m('no motion', [
+      ['camera_motion', '카메라 움직임 없음을 요구하는 표현'],
+      ['subject_motion', '대상의 움직임 없음을 요구하는 표현']
+    ])
+  ];
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS);
 })();

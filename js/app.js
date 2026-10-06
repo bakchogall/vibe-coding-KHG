@@ -151,8 +151,9 @@
     box.appendChild(h('h3', { text: seg.text }));
     if (seg.status === 'unmatched') {
       box.appendChild(h('p', { class: 'meta', text: '사전과 패턴 규칙에 없는 표현입니다. 주제나 배경을 가리키는 말일 수 있어 "주제/배경 후보"로 봅니다.' }));
-      // 3단계에서 사용자가 요청할 때만 외부 조회를 하는 버튼이 들어갈 자리
-      box.appendChild(h('button', { type: 'button', class: 'btn small', disabled: 'disabled', text: '외부에서 찾아보기 (준비 중)' }));
+      var holder = h('div', { class: 'lookup' });
+      box.appendChild(holder);
+      renderLookup(holder, seg.text);
       return;
     }
     var meta = '출처: ' + (SOURCE_LABEL[seg.source] || seg.source);
@@ -162,6 +163,92 @@
     if (seg.senses.length > 1) {
       box.appendChild(h('p', { class: 'meta', text: '뜻이 여러 개인 단어입니다. 문맥에 맞는 쪽으로 읽으세요.' }));
     }
+  }
+
+  // ---- 외부 조회(사용자가 버튼을 누를 때만 호출) ----
+
+  var lookupToken = 0;
+  var SOURCE_NAME = { wikipedia: 'Wikipedia', datamuse: 'Datamuse' };
+  var ERROR_TEXT = {
+    rate: '요청이 너무 많아 잠시 제한되었습니다. 1~2분 뒤에 다시 시도해 주세요.',
+    timeout: '응답이 너무 늦어 중단했습니다. 잠시 뒤 다시 시도해 주세요.',
+    network: '연결에 실패했습니다. 인터넷 연결을 확인하고 다시 시도해 주세요.',
+    http: '조회 서비스가 정상적인 응답을 주지 않았습니다. 잠시 뒤 다시 시도해 주세요.'
+  };
+
+  function shortExtract(text) {
+    var t = (text || '').trim();
+    if (t.length <= 240) return t;
+    var cut = t.slice(0, 240), dot = cut.lastIndexOf('. ');
+    return dot > 80 ? cut.slice(0, dot + 1) : cut + '…';
+  }
+
+  function renderLookup(holder, term) {
+    clear(holder);
+    if (!PC.lookup.isLookupable(term)) {
+      holder.appendChild(h('p', { class: 'meta', text: '영어 단어만 조회할 수 있어서 이 표현은 조회하지 않습니다.' }));
+      return;
+    }
+    var cached = PC.lookup.getCached(term);
+    if (cached) { renderLookupResult(holder, cached, term); return; }
+    holder.appendChild(h('button', {
+      type: 'button', class: 'btn small', text: '외부에서 찾아보기',
+      onclick: function () { startLookup(holder, term); }
+    }));
+    holder.appendChild(h('p', { class: 'meta', text: '누르면 이 단어가 Wikipedia 서버로 전송됩니다(찾지 못하면 Datamuse에도). 조회 결과는 이 브라우저에 저장됩니다.' }));
+  }
+
+  function startLookup(holder, term) {
+    var token = ++lookupToken;
+    clear(holder);
+    holder.appendChild(h('p', { class: 'meta', text: '"' + term + '" 조회 중…' }));
+    PC.lookup.run(term).then(function (res) {
+      // 다른 단어로 넘어가 화면이 다시 그려졌으면 결과를 그리지 않는다.
+      if (token !== lookupToken || !holder.isConnected) return;
+      clear(holder);
+      renderLookupResult(holder, res, term);
+    });
+  }
+
+  function renderLookupResult(holder, res, term) {
+    var box = h('div', { class: 'result' });
+    if (res.status === 'found') {
+      var src = SOURCE_NAME[res.source] || res.source;
+      box.appendChild(h('p', { class: 'meta', text: '외부 조회 결과 · 참고용, 검증되지 않음' + (res.fromCache ? ' · 저장된 결과' : '') }));
+      box.appendChild(h('p', null, [
+        h('strong', { text: (res.ko ? res.ko + ' / ' : '') + res.title }),
+        ' (' + src + ')'
+      ]));
+      if (PC.lookup.norm(res.title) !== PC.lookup.norm(term)) {
+        box.appendChild(h('p', { class: 'meta', text: "'" + term + "'와 이름이 다른 문서로 연결되었습니다. 같은 뜻인지 확인하세요." }));
+      }
+      var body = res.description ? res.description + (res.extract ? ' — ' + shortExtract(res.extract) : '') : shortExtract(res.extract);
+      if (body) box.appendChild(h('p', { text: body }));
+      if (res.guess) {
+        box.appendChild(h('p', null, [
+          elementChip(res.guess), ' ',
+          h('span', { class: 'meta', text: '자동 추정이라 틀릴 수 있고, 경고 판정에는 반영되지 않습니다.' })
+        ]));
+      } else {
+        box.appendChild(h('p', { class: 'meta', text: '요소를 추정하지 못했습니다.' }));
+      }
+      if (res.url && res.url.indexOf('https://en.wikipedia.org/') === 0) {
+        box.appendChild(h('p', null, [h('a', { href: res.url, target: '_blank', rel: 'noopener noreferrer', text: '원문 보기 (Wikipedia)' })]));
+      }
+    } else if (res.status === 'ambiguous') {
+      box.appendChild(h('p', { text: "'" + term + "'은(는) 여러 뜻이 있는 단어입니다(Wikipedia 동음이의 문서). 문맥에 맞는 뜻을 직접 확인하세요." }));
+    } else if (res.status === 'notfound') {
+      box.appendChild(h('p', { text: 'Wikipedia와 Datamuse에서 찾지 못했습니다. 사전에 없는 고유한 표현일 수 있습니다.' }));
+    } else if (res.status === 'error') {
+      box.appendChild(h('p', { text: ERROR_TEXT[res.kind] || ERROR_TEXT.network }));
+      box.appendChild(h('button', {
+        type: 'button', class: 'btn small', text: '다시 시도',
+        onclick: function () { startLookup(holder, term); }
+      }));
+    } else {
+      box.appendChild(h('p', { class: 'meta', text: '조회할 수 없는 표현입니다.' }));
+    }
+    holder.appendChild(box);
   }
 
   function renderWarnings(analysis) {

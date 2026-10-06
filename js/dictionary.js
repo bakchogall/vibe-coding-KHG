@@ -75,58 +75,58 @@
     t('sketch', 'style', '연필·펜으로 빠르게 그린 듯한 선 위주의 스케치 느낌'),
 
     // 조명
-    t('golden hour', 'lighting', '해 뜬 직후·지기 직전의 따뜻한 빛'),
-    t('soft light', 'lighting', '그림자가 부드러운 조명'),
-    t('rim light', 'lighting', '피사체 윤곽을 따라 비추는 조명'),
-    t('backlight', 'lighting', '피사체 뒤에서 비추는 역광'),
-    t('studio lighting', 'lighting', '스튜디오에서 쓰는 인공 조명'),
-    t('volumetric light', 'lighting', '공기 중에 빛줄기가 보이는 효과'),
-    t('neon light', 'lighting', '네온 불빛'),
-    t('natural light', 'lighting', '자연광'),
-    t('dramatic lighting', 'lighting', '명암 대비가 강한 조명'),
+    t('golden hour', 'lighting', '해 뜬 직후·지기 직전의 따뜻한 금빛 광선. 포근하고 낭만적인 분위기'),
+    t('soft light', 'lighting', '그림자 경계가 흐리고 대비가 낮은 조명. 부드럽고 편안한 느낌'),
+    t('rim light', 'lighting', '피사체 가장자리를 따라 비추는 조명. 윤곽이 빛나 배경에서 분리되어 보임'),
+    t('backlight', 'lighting', '피사체 뒤에서 비추는 역광. 윤곽이 빛나고 앞면은 어두워지기 쉬움'),
+    t('studio lighting', 'lighting', '스튜디오처럼 통제된 인공 조명. 깔끔하고 고른 상업 사진 느낌'),
+    t('volumetric light', 'lighting', '안개·먼지 속에서 빛줄기가 보이는 효과. 깊이감과 신비로운 분위기'),
+    t('neon light', 'lighting', '네온사인 같은 선명한 색 조명. 밤거리·사이버펑크 분위기'),
+    t('natural light', 'lighting', '햇빛·창가 빛 같은 자연광. 꾸밈없고 사실적인 느낌'),
+    t('dramatic lighting', 'lighting', '명암 대비가 강한 조명. 긴장감 있고 극적인 분위기'),
 
     // 카메라
-    t('35mm', 'camera', '35mm 초점거리(약간 넓은 화각)'),
-    t('85mm', 'camera', '85mm 초점거리(인물 촬영에 흔한 화각)'),
-    t('wide angle', 'camera', '광각(넓게 담김)'),
-    t('telephoto', 'camera', '망원(멀리 있는 대상을 당겨 담음)'),
-    t('macro', 'camera', '접사(아주 가까이서 확대 촬영)'),
-    t('shallow depth of field', 'camera', '얕은 심도(초점 밖 배경이 흐려짐)'),
-    t('bokeh', 'camera', '초점 밖 빛이 둥글게 흐려진 효과'),
-    t('fisheye', 'camera', '어안렌즈(왜곡된 초광각)'),
+    t('35mm', 'camera', '35mm 초점거리. 약간 넓은 화각으로 스냅·거리 사진 같은 현장감'),
+    t('85mm', 'camera', '85mm 초점거리. 인물을 자연스럽게 담고 배경이 부드럽게 흐려짐'),
+    t('wide angle', 'camera', '넓은 화각. 한 화면에 더 많은 공간이 담기고 원근감이 과장됨'),
+    t('telephoto', 'camera', '망원. 멀리 있는 대상을 당겨 담고 배경이 압축돼 보임'),
+    t('macro', 'camera', '접사. 아주 가까이서 작은 대상의 세부를 크게 담음'),
+    t('shallow depth of field', 'camera', '얕은 심도. 초점 맞은 부분만 선명하고 배경이 흐려져 대상이 돋보임'),
+    t('bokeh', 'camera', '초점 밖 빛이 둥글게 번져 부드럽게 보이는 효과'),
+    t('fisheye', 'camera', '어안렌즈. 극단적으로 넓고 둥글게 휘어 보이는 왜곡'),
 
     // 구도
-    t('close-up', 'composition', '대상을 가까이 크게 담은 구도'),
-    t('wide shot', 'composition', '대상과 주변을 넓게 담은 구도'),
-    t('medium shot', 'composition', '인물의 상반신 정도를 담은 구도'),
-    t('rule of thirds', 'composition', '화면을 3등분한 선·교차점에 대상을 두는 구도'),
-    t('symmetrical', 'composition', '좌우 대칭 구도'),
-    t('centered', 'composition', '대상을 화면 중앙에 두는 구도'),
-    t('low angle', 'composition', '아래에서 올려다보는 시점'),
-    t("bird's-eye view", 'composition', '높은 곳에서 내려다보는 시점'),
+    t('close-up', 'composition', '대상을 가까이 크게 담음. 표정·세부가 강조됨'),
+    t('wide shot', 'composition', '대상과 주변 환경을 넓게 담음. 장소와 규모감이 보임'),
+    t('medium shot', 'composition', '인물의 허리 위쯤을 담음. 표정과 몸짓이 함께 보임'),
+    t('rule of thirds', 'composition', '화면을 가로세로 3등분한 선·교차점에 대상을 둠. 안정적이고 자연스러운 균형'),
+    t('symmetrical', 'composition', '좌우 대칭 구도. 안정적이고 정돈된 느낌'),
+    t('centered', 'composition', '대상을 화면 중앙에 둠. 시선이 집중되고 정면적인 느낌'),
+    t('low angle', 'composition', '아래에서 올려다보는 시점. 대상이 크고 강해 보임'),
+    t("bird's-eye view", 'composition', '높은 곳에서 내려다보는 시점. 전체 배치가 한눈에 보이고 대상이 작아 보임'),
 
     // 색
-    t('pastel', 'color', '파스텔 톤(연하고 부드러운 색)'),
-    t('monochrome', 'color', '한 가지 색 계열'),
-    t('vibrant', 'color', '선명하고 채도 높은 색'),
-    t('muted', 'color', '채도가 낮고 차분한 색'),
-    t('warm tone', 'color', '따뜻한 색조'),
-    t('cool tone', 'color', '차가운 색조'),
-    t('black and white', 'color', '흑백'),
-    t('high contrast', 'color', '밝고 어두운 차이가 큼'),
+    t('pastel', 'color', '연하고 부드러운 파스텔 톤. 차분하고 몽환적인 느낌'),
+    t('monochrome', 'color', '한 가지 색 계열만 사용. 통일감이 강하고 단정함'),
+    t('vibrant', 'color', '선명하고 채도 높은 색. 활기차고 눈에 잘 띔'),
+    t('muted', 'color', '채도가 낮은 차분한 색. 가라앉은 분위기'),
+    t('warm tone', 'color', '붉은·주황 계열의 따뜻한 색조. 포근하고 아늑한 느낌'),
+    t('cool tone', 'color', '파란·청록 계열의 차가운 색조. 시원하고 차분하거나 쓸쓸한 느낌'),
+    t('black and white', 'color', '흑백. 색 대신 명암과 질감이 강조됨'),
+    t('high contrast', 'color', '밝고 어두운 차이가 커서 강렬한 느낌'),
     m('salmon', [
       ['subject', '연어(물고기)'],
       ['color', '연어살 같은 분홍빛 주황색']
     ]),
 
     // 품질/해상도
-    t('4k', 'quality', '4K 해상도'),
-    t('8k', 'quality', '8K 해상도'),
-    t('high resolution', 'quality', '고해상도'),
-    t('highly detailed', 'quality', '세부 묘사가 많음'),
-    t('detailed', 'quality', '세부가 자세히 표현됨'),
-    t('sharp focus', 'quality', '초점이 선명함'),
-    t('hdr', 'quality', '하이 다이내믹 레인지(밝고 어두운 부분을 폭넓게 표현)'),
+    t('4k', 'quality', '4K 해상도 표현. 선명한 화질을 요구할 때 자주 씀'),
+    t('8k', 'quality', '8K 해상도 표현. 더 높은 화질을 요구할 때 자주 씀'),
+    t('high resolution', 'quality', '고해상도를 요구하는 표현'),
+    t('highly detailed', 'quality', '세부 묘사를 많이 요구함. 질감과 디테일이 풍부해짐'),
+    t('detailed', 'quality', '세부가 자세히 표현되길 요구함'),
+    t('sharp focus', 'quality', '초점이 선명하게 맞은 상태를 요구함'),
+    t('hdr', 'quality', '하이 다이내믹 레인지. 밝은 곳과 어두운 곳의 디테일을 모두 살려 표현'),
     t('masterpiece', 'quality', '걸작 수준을 요구하는 품질 강화 표현'),
     t('award-winning', 'quality', '수상작 수준을 요구하는 품질 강화 표현'),
     t('trending on artstation', 'quality', 'ArtStation 인기작 수준을 요구하는 품질 강화 표현'),
@@ -257,5 +257,72 @@
     m('amber', [['subject', '호박(나무 수지가 굳은 보석)'], ['color', '호박색(노르스름한 주황색)']])
   ];
 
-  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS);
+  function effects(element, pairs) {
+    return pairs.map(function (p) { return t(p[0], element, p[1]); });
+  }
+
+  // ---- 핵심 효과 설명 보강: 조명·카메라·구도·색·품질 (번역이 아니라 결과물에 미치는 효과 중심) ----
+  var EFFECT_TERMS = [].concat(
+    // lighting
+    effects('lighting', [
+      ['hard light', '그림자가 선명하고 대비가 강한 직접 조명. 질감과 윤곽이 날카롭게 보임'],
+      ['ambient light', '장면 전체를 은은하게 채우는 주변광. 그림자가 약하고 분위기가 고름'],
+      ['low key', '어두운 톤 위주에 강한 명암 대비. 무겁고 극적인 분위기'],
+      ['high key', '밝은 톤 위주에 그림자가 적음. 밝고 가벼운 느낌'],
+      ['cinematic lighting', '영화처럼 연출된 조명. 대비와 색감이 강조됨'],
+      ['moonlight', '달빛. 푸르스름하고 차분한 밤 분위기'],
+      ['candlelight', '촛불. 따뜻하고 약한 빛이 아늑한 분위기를 만듦'],
+      ['overcast', '흐린 하늘 아래의 고르고 부드러운 빛. 그림자가 거의 없음'],
+      ['blue hour', '해 뜨기 전·해 진 직후 하늘이 푸르게 물드는 시간대의 차분한 푸른빛'],
+      ['spotlight', '한 곳에 집중된 빛. 주인공이 돋보임'],
+      ['diffused light', '부드럽게 퍼진 빛. 그림자가 흐릿하고 고른 느낌'],
+      ['chiaroscuro', '밝음과 어둠의 강한 대비로 입체감을 만드는 명암 기법']
+    ]),
+    // camera
+    effects('camera', [
+      ['depth of field', '심도. 초점이 맞는 범위로, 얕으면 배경이 흐려지고 깊으면 전체가 선명함'],
+      ['long exposure', '장노출. 움직이는 것이 흐르듯 번지고 빛이 선으로 남음'],
+      ['tilt shift', '틸트시프트. 실제 풍경이 미니어처처럼 보이는 효과'],
+      ['lens flare', '강한 빛이 렌즈에 반사돼 생기는 번짐과 빛무리'],
+      ['film grain', '필름 사진 같은 거친 입자감'],
+      ['anamorphic', '아나모픽. 영화 같은 와이드 화면과 가로로 길게 번지는 빛 효과'],
+      ['vignette', '비네팅. 화면 가장자리가 어두워져 시선이 중앙에 모임'],
+      ['motion blur', '모션 블러. 움직임이 흐려져 속도감이 생김']
+    ]),
+    // composition
+    effects('composition', [
+      ['dutch angle', '카메라를 기울여 수평선이 비스듬한 화면. 불안하고 긴장된 느낌'],
+      ['over the shoulder', '인물의 어깨 너머로 대상을 보는 시점. 대화·관찰하는 느낌'],
+      ['extreme close-up', '눈이나 입처럼 아주 작은 부분을 화면 가득 담음. 감정과 디테일이 크게 강조됨'],
+      ['full body', '머리부터 발끝까지 전신을 담은 구도'],
+      ['leading lines', '길·선이 시선을 대상으로 이끄는 구도'],
+      ['negative space', '대상 주변을 비워 두는 구도. 대상이 돋보이고 여유로운 느낌'],
+      ['high angle', '위에서 내려다보는 시점. 대상이 작고 약해 보임'],
+      ['eye level', '대상의 눈높이에서 촬영. 자연스럽고 중립적인 느낌'],
+      ['golden ratio', '황금비율에 맞춰 배치한 구도. 안정적이고 균형 잡힌 느낌'],
+      ['establishing shot', '장면의 장소와 상황을 한눈에 보여 주는 넓은 컷']
+    ]),
+    // color
+    effects('color', [
+      ['sepia', '갈색빛으로 바랜 옛 사진 같은 색조'],
+      ['saturated', '채도가 높아 색이 진하고 강함'],
+      ['desaturated', '채도를 낮춰 색이 빠진 듯한 차분한 느낌'],
+      ['complementary colors', '보색(서로 반대편 색) 조합. 강한 색 대비로 눈에 띔'],
+      ['analogous colors', '색상환에서 이웃한 색의 조합. 조화롭고 편안함'],
+      ['iridescent', '보는 각도에 따라 무지갯빛으로 변하는 광택'],
+      ['gradient', '한 색에서 다른 색으로 자연스럽게 이어지는 변화'],
+      ['duotone', '두 가지 색만으로 이루어진 화면'],
+      ['teal and orange', '청록과 주황의 조합. 영화 색보정에서 흔한 대비'],
+      ['earth tones', '흙·나무 같은 갈색·황토 계열의 차분한 색']
+    ]),
+    // quality
+    effects('quality', [
+      ['intricate details', '정교하고 복잡한 세부 묘사를 요구함'],
+      ['high quality', '높은 화질을 요구하는 막연한 표현. 구체적인 효과는 모델 해석에 따름'],
+      ['fine details', '섬세한 세부 묘사를 요구함'],
+      ['ultra hd', '초고화질(UHD)을 요구하는 표현']
+    ])
+  );
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS);
 })();

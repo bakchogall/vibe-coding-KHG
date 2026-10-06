@@ -61,6 +61,7 @@
     t('studio', 'setting', '스튜디오 배경'),
     t('indoor', 'setting', '실내'),
     t('outdoor', 'setting', '야외'),
+    t('cityscape', 'setting', '도시의 전경. 건물과 스카이라인이 보이는 도시 풍경'),
 
     // 스타일
     t('photorealistic', 'style', '사진처럼 사실적인 표현'),

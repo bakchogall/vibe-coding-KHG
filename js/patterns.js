@@ -47,7 +47,13 @@
       { id: 'P7', element: 'setting',  head: 'background',   min: 1 },
       { id: 'P8', element: 'color',    head: 'tone',         min: 1 },
       { id: 'P8', element: 'color',    head: 'palette',      min: 1 },
-      { id: 'P8', element: 'color',    head: 'color',        min: 1 }
+      { id: 'P8', element: 'color',    head: 'color',        min: 1 },
+      // P9: motion / movement 는 앞에 어떤 수식어가 붙어도(flowing, fast …) 움직임을 가리킨다.
+      // 카메라인지 대상인지는 문맥에 따라 달라서 확정하지 않고 "카메라 움직임(추정)"으로만 분류한다.
+      { id: 'P9', element: 'camera_motion', head: 'motion',   min: 0,
+        note: '카메라일 수도 대상의 움직임일 수도 있어 추정입니다' },
+      { id: 'P9', element: 'camera_motion', head: 'movement', min: 0,
+        note: '카메라일 수도 대상의 움직임일 수도 있어 추정입니다' }
     ],
     maxModifiers: 3
   };

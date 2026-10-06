@@ -153,7 +153,8 @@
         if (key !== h.head && pluralStems(key).indexOf(h.head) === -1) continue;
         var el = elementMap[h.element];
         consider(k + 1, h.id, h.element,
-          '"' + h.head + '"로 끝나는 표현 → ' + (el ? el.ko : h.element) + ' (패턴 규칙 ' + h.id + ')');
+          '"' + h.head + '"로 끝나는 표현 → ' + (el ? el.ko : h.element) + ' (패턴 규칙 ' + h.id + ')' +
+          (h.note ? ' · ' + h.note : ''));
         break;
       }
     });

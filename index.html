@@ -37,6 +37,7 @@
         <textarea id="prompt" rows="6" maxlength="5000" spellcheck="false"
           placeholder="예: A beautiful griffin without wings, warm tone, cool tone, 85mm, maybe sunset"></textarea>
         <p class="counter" id="counter" aria-live="off">0 / 5000</p>
+        <p class="notice-box" id="input-note" role="status" hidden></p>
         <details class="wanted" open>
           <summary>내가 신경 쓴 요소 체크 (선택)</summary>
           <p class="hint">챗봇에게 꼭 담아 달라고 한 요소를 체크하세요. 체크한 요소가 프롬프트에서 발견되지 않으면 경고합니다.</p>
@@ -56,6 +57,7 @@
         <section class="card" aria-labelledby="anatomy-title">
           <h2 id="anatomy-title">3. 해부 결과</h2>
           <p class="hint">단어나 구절을 누르면 설명이 아래에 나타납니다. 색과 함께 요소 이름도 표시됩니다.</p>
+          <a href="#warn-title" class="skip-link">해부 결과 건너뛰고 경고로 이동</a>
           <div id="anatomy" class="anatomy" role="group" aria-label="요소별로 나눈 프롬프트"></div>
           <div id="detail" class="detail" aria-live="polite"></div>
         </section>
@@ -67,7 +69,7 @@
         </section>
 
         <section class="card" aria-labelledby="warn-title">
-          <h2 id="warn-title">5. 경고</h2>
+          <h2 id="warn-title" tabindex="-1">5. 경고</h2>
           <div id="warnings"></div>
         </section>
 

@@ -8,6 +8,8 @@
     { id: 'image', label: '이미지 생성용 프롬프트' },
     { id: 'video', label: '영상 생성용 프롬프트' }
   ];
+  var EMPTY_DEFAULT = '프롬프트를 입력하면 분석 결과가 여기에 표시됩니다.';
+  var EMPTY_NO_WORDS = '분석할 단어가 없습니다. 영어 단어를 입력해 보세요.';
   var LEVEL_LABEL = { warning: '경고', notice: '안내' };
   var SOURCE_LABEL = { default: '기본 사전', user: '사용자 사전', pattern: '패턴 규칙(추정)' };
 
@@ -404,14 +406,38 @@
     }
   }
 
+  // 입력창 아래 안내: 한글이 섞였을 때, 입력 한도에 닿았을 때
+  function updateInputNote(text) {
+    var notes = [];
+    if (/\p{Script=Hangul}/u.test(text)) { // 한글(자모·음절) 포함 여부
+      notes.push('한글이 포함되어 있습니다. 이 도구는 영어 프롬프트만 분석하며, 한글 단어는 "분류 못 한 단어"로 표시됩니다.');
+    }
+    if (text.length >= MAX_LEN) {
+      notes.push('입력 한도(' + MAX_LEN + '자)에 도달했습니다. 붙여넣은 글이 더 길었다면 뒷부분이 잘렸을 수 있습니다.');
+    }
+    var box = $('input-note');
+    box.textContent = notes.join(' ');
+    box.hidden = !notes.length;
+  }
+
   function analyzeAndRender() {
     var text = $('prompt').value;
     $('counter').textContent = text.length + ' / ' + MAX_LEN;
+    updateInputNote(text);
     var empty = !text.trim();
+    $('empty').textContent = EMPTY_DEFAULT;
     $('empty').hidden = !empty;
     $('results').hidden = empty;
     if (empty) { state.analysis = null; return; }
     var analysis = PC.analyze(text, state.category, state.userTerms);
+    // 구두점뿐이라 분석할 단어가 하나도 없으면 빈 결과표 대신 안내를 보여 준다.
+    if (!analysis.segments.some(function (s) { return s.status !== 'separator'; })) {
+      $('empty').textContent = EMPTY_NO_WORDS;
+      $('empty').hidden = false;
+      $('results').hidden = true;
+      state.analysis = null;
+      return;
+    }
     state.analysis = analysis;
     state.stale = false;
     state.selected = -1;
@@ -475,7 +501,11 @@
     });
     $('tab-analyze').addEventListener('click', function () { showScreen('analyze'); });
     $('tab-dict').addEventListener('click', function () { showScreen('dict'); });
-    window.addEventListener('hashchange', function () { showScreen(location.hash === '#dict' ? 'dict' : 'analyze'); });
+    // 화면 전환은 #dict 와 빈 주소에만 반응한다(건너뛰기 링크 같은 다른 #앵커는 건드리지 않는다).
+    window.addEventListener('hashchange', function () {
+      if (location.hash === '#dict') showScreen('dict');
+      else if (location.hash === '' || location.hash === '#') showScreen('analyze');
+    });
 
     fillSelect($('category'), CATEGORIES, state.category);
 

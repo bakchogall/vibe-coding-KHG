@@ -11,45 +11,15 @@
   var LEVEL_LABEL = { warning: '경고', notice: '안내' };
   var SOURCE_LABEL = { default: '기본 사전', user: '사용자 사전', pattern: '패턴 규칙(추정)' };
 
-  var state = { category: 'image', analysis: null, selected: -1, highlighted: [], wanted: [] };
+  var state = {
+    category: 'image', analysis: null, selected: -1, highlighted: [], wanted: [],
+    userList: [],   // 저장된 사용자 용어(js/userdict.js 형태)
+    userTerms: [],  // 분석기에 넘기는 복사본
+    stale: false    // 사용자 사전이 바뀌어 지금 보이는 분석 결과가 오래됐는지
+  };
 
-  var elementKo = {};
-  (PC.ELEMENTS || []).forEach(function (e) { elementKo[e.id] = e.ko; });
-
-  function $(id) { return document.getElementById(id); }
-
-  // 작은 DOM 헬퍼: h('div', { class: 'x', text: '...' }, [자식...])
-  function h(tag, props, children) {
-    var e = document.createElement(tag);
-    if (props) {
-      Object.keys(props).forEach(function (k) {
-        var v = props[k];
-        if (v === null || v === undefined) return;
-        if (k === 'class') e.className = v;
-        else if (k === 'text') e.textContent = v;
-        else if (k === 'style') e.setAttribute('style', v);
-        else if (k.indexOf('on') === 0) e.addEventListener(k.slice(2), v);
-        else e.setAttribute(k, v);
-      });
-    }
-    (children || []).forEach(function (c) {
-      if (c === null || c === undefined) return;
-      e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
-    });
-    return e;
-  }
-
-  function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
-
-  function elVar(id) { return 'var(--c-' + id + ')'; }
-
-  function elementChip(id, zero) {
-    return h('span', {
-      class: 'chip' + (zero ? ' zero' : ''),
-      style: '--chip-bg:' + elVar(id),
-      text: elementKo[id] || id
-    });
-  }
+  var ui = PC.ui;
+  var $ = ui.$, h = ui.h, clear = ui.clear, elVar = ui.elVar, elementChip = ui.elementChip;
 
   // 이 구간에서 현재 카테고리에 해당하는 의미들
   function activeSenses(seg) {
@@ -133,8 +103,10 @@
   }
 
   function senseRow(s) {
-    var kids = [elementChip(s.element), h('span', { text: s.ko })];
-    if (!s.verified) kids.push(h('span', { class: 'badge', text: '검증 필요' }));
+    // 설명이 "검증 필요"뿐인 의미는 글자와 배지가 겹치지 않게 배지만 보여 준다.
+    var kids = [elementChip(s.element)];
+    if (s.verified) kids.push(h('span', { text: s.ko }));
+    else kids.push(h('span', { class: 'badge', text: '설명 검증 필요' }));
     if (!s.inScope) kids.push(h('span', { class: 'badge', text: '이 종류에서는 분석하지 않음' }));
     return h('div', { class: 'sense' }, kids);
   }
@@ -151,6 +123,10 @@
     box.appendChild(h('h3', { text: seg.text }));
     if (seg.status === 'unmatched') {
       box.appendChild(h('p', { class: 'meta', text: '사전과 패턴 규칙에 없는 표현입니다. 주제나 배경을 가리키는 말일 수 있어 "주제/배경 후보"로 봅니다.' }));
+      box.appendChild(h('p', null, [h('button', {
+        type: 'button', class: 'btn small', text: '내 사전에 추가',
+        onclick: function () { showScreen('dict'); PC.dictPage.openWithTerm(seg.text); }
+      })]));
       var holder = h('div', { class: 'lookup' });
       box.appendChild(holder);
       renderLookup(holder, seg.text);
@@ -374,8 +350,9 @@
       seen[seg.term] = true;
       any = true;
       var senses = seg.senses.map(function (s) {
-        var kids = [elementChip(s.element), h('span', { text: ' ' + s.ko })];
-        if (!s.verified) kids.push(h('span', { class: 'badge', text: '검증 필요' }));
+        var kids = [elementChip(s.element)];
+        if (s.verified) kids.push(h('span', { text: ' ' + s.ko }));
+        else kids.push(h('span', { class: 'badge', text: '설명 검증 필요' }));
         if (!s.inScope) kids.push(h('span', { class: 'badge', text: '이 종류에서는 분석하지 않음' }));
         return h('p', { class: 'term-sense' }, kids);
       });
@@ -434,8 +411,9 @@
     $('empty').hidden = !empty;
     $('results').hidden = empty;
     if (empty) { state.analysis = null; return; }
-    var analysis = PC.analyze(text, state.category);
+    var analysis = PC.analyze(text, state.category, state.userTerms);
     state.analysis = analysis;
+    state.stale = false;
     state.selected = -1;
     state.highlighted = [];
     renderSummary(analysis);
@@ -457,7 +435,48 @@
     });
   }
 
+  // ---- 화면 전환(같은 페이지 안에서 두 화면을 오간다) ----
+
+  function showScreen(name) {
+    var dict = name === 'dict';
+    $('screen-analyze').hidden = dict;
+    $('screen-dict').hidden = !dict;
+    $('tab-analyze').setAttribute('aria-current', dict ? 'false' : 'page');
+    $('tab-dict').setAttribute('aria-current', dict ? 'page' : 'false');
+    var hash = dict ? '#dict' : '#';
+    if (location.hash !== hash && !(hash === '#' && location.hash === '')) {
+      try { history.replaceState(null, '', dict ? '#dict' : location.pathname + location.search); } catch (e) { /* file:// 등 */ }
+    }
+    // 사용자 사전이 바뀌었으면 돌아왔을 때 같은 입력을 다시 분석한다.
+    if (!dict && state.stale) analyzeAndRender();
+  }
+
+  function setUserList(list) {
+    state.userList = list;
+    state.userTerms = PC.userDict.toAnalyzerTerms(list);
+    state.stale = true;
+    return PC.userDict.save(undefined, list);
+  }
+
   function init() {
+    var loaded = PC.userDict.load(undefined, (PC.ELEMENTS || []).map(function (e) { return e.id; }));
+    state.userList = loaded.terms;
+    state.userTerms = PC.userDict.toAnalyzerTerms(loaded.terms);
+    PC.dictPage.init({
+      getUserTerms: function () { return state.userList; },
+      setUserTerms: setUserList,
+      onChange: function () { /* 분석 화면으로 돌아갈 때 stale 이면 다시 분석한다 */ },
+      initialNotice: loaded.corrupt
+        ? (loaded.skipped
+            ? '저장된 내 사전에서 읽을 수 없는 항목 ' + loaded.skipped + '개를 건너뛰었습니다.'
+            : '저장된 내 사전을 읽지 못해 빈 사전으로 시작합니다.') +
+          ' 용어를 새로 저장하면 정상 데이터로 덮어씁니다.'
+        : ''
+    });
+    $('tab-analyze').addEventListener('click', function () { showScreen('analyze'); });
+    $('tab-dict').addEventListener('click', function () { showScreen('dict'); });
+    window.addEventListener('hashchange', function () { showScreen(location.hash === '#dict' ? 'dict' : 'analyze'); });
+
     fillSelect($('category'), CATEGORIES, state.category);
 
     $('category').addEventListener('change', function (e) {
@@ -471,6 +490,7 @@
     renderWantedOptions();
     $('prompt').addEventListener('input', analyzeAndRender);
     analyzeAndRender();
+    if (location.hash === '#dict') showScreen('dict');
   }
 
   init();

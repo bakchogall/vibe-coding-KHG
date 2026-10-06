@@ -12,62 +12,108 @@
   <header class="page-header">
     <h1>PromptCheck</h1>
     <p class="lead">챗봇이 써 준 생성 AI용 영어 프롬프트를 붙여넣으면, 각 부분의 역할과 빠진 요소·충돌·모호한 표현을 규칙으로 점검합니다.</p>
+    <nav class="tabs" aria-label="화면 전환">
+      <button type="button" id="tab-analyze" class="tab" aria-current="page">프롬프트 분석</button>
+      <button type="button" id="tab-dict" class="tab">용어 사전</button>
+    </nav>
   </header>
 
   <main>
     <noscript><p class="notice-box">이 페이지는 JavaScript가 필요합니다.</p></noscript>
 
-    <section class="card" aria-labelledby="input-title">
-      <h2 id="input-title">1. 프롬프트 입력</h2>
-      <div class="controls">
-        <label class="field">
-          <span class="field-label">프롬프트 종류</span>
-          <select id="category"></select>
+    <!-- 화면 1: 해부 화면 -->
+    <div id="screen-analyze">
+      <section class="card" aria-labelledby="input-title">
+        <h2 id="input-title">1. 프롬프트 입력</h2>
+        <div class="controls">
+          <label class="field">
+            <span class="field-label">프롬프트 종류</span>
+            <select id="category"></select>
+          </label>
+        </div>
+        <label class="field" for="prompt">
+          <span class="field-label">영어 프롬프트</span>
         </label>
+        <textarea id="prompt" rows="6" maxlength="5000" spellcheck="false"
+          placeholder="예: A beautiful griffin without wings, warm tone, cool tone, 85mm, maybe sunset"></textarea>
+        <p class="counter" id="counter" aria-live="off">0 / 5000</p>
+        <details class="wanted" open>
+          <summary>내가 신경 쓴 요소 체크 (선택)</summary>
+          <p class="hint">챗봇에게 꼭 담아 달라고 한 요소를 체크하세요. 체크한 요소가 프롬프트에서 발견되지 않으면 경고합니다.</p>
+          <div id="wanted" class="wanted-list"></div>
+        </details>
+      </section>
+
+      <div id="empty" class="card empty">프롬프트를 입력하면 분석 결과가 여기에 표시됩니다.</div>
+
+      <div id="results" hidden>
+        <section class="card" aria-labelledby="summary-title">
+          <h2 id="summary-title">2. 분류 요약</h2>
+          <p id="summary" aria-live="polite"></p>
+          <ul id="legend" class="legend"></ul>
+        </section>
+
+        <section class="card" aria-labelledby="anatomy-title">
+          <h2 id="anatomy-title">3. 해부 결과</h2>
+          <p class="hint">단어나 구절을 누르면 설명이 아래에 나타납니다. 색과 함께 요소 이름도 표시됩니다.</p>
+          <div id="anatomy" class="anatomy" role="group" aria-label="요소별로 나눈 프롬프트"></div>
+          <div id="detail" class="detail" aria-live="polite"></div>
+        </section>
+
+        <section class="card" aria-labelledby="reading-title">
+          <h2 id="reading-title">4. 프롬프트가 이렇게 읽힌다</h2>
+          <p class="hint">챗봇에게 설명한 내 의도와 눈으로 비교해 보세요. 이 표는 규칙으로 읽은 결과이며 생성 AI의 실제 해석과 다를 수 있습니다. 사전에 없는 표현은 "분류 못 한 단어"에 들어갑니다.</p>
+          <div id="reading"></div>
+        </section>
+
+        <section class="card" aria-labelledby="warn-title">
+          <h2 id="warn-title">5. 경고</h2>
+          <div id="warnings"></div>
+        </section>
+
+        <section class="card" aria-labelledby="terms-title">
+          <h2 id="terms-title">6. 용어 설명</h2>
+          <ul id="terms" class="terms"></ul>
+        </section>
       </div>
-      <label class="field" for="prompt">
-        <span class="field-label">영어 프롬프트</span>
-      </label>
-      <textarea id="prompt" rows="6" maxlength="5000" spellcheck="false"
-        placeholder="예: A beautiful griffin without wings, warm tone, cool tone, 85mm, maybe sunset"></textarea>
-      <p class="counter" id="counter" aria-live="off">0 / 5000</p>
-      <details class="wanted" open>
-        <summary>내가 신경 쓴 요소 체크 (선택)</summary>
-        <p class="hint">챗봇에게 꼭 담아 달라고 한 요소를 체크하세요. 체크한 요소가 프롬프트에서 발견되지 않으면 경고합니다.</p>
-        <div id="wanted" class="wanted-list"></div>
-      </details>
-    </section>
+    </div>
 
-    <div id="empty" class="card empty">프롬프트를 입력하면 분석 결과가 여기에 표시됩니다.</div>
-
-    <div id="results" hidden>
-      <section class="card" aria-labelledby="summary-title">
-        <h2 id="summary-title">2. 분류 요약</h2>
-        <p id="summary" aria-live="polite"></p>
-        <ul id="legend" class="legend"></ul>
+    <!-- 화면 2: 용어 사전 화면 -->
+    <div id="screen-dict" hidden>
+      <section class="card" aria-labelledby="dict-form-title" id="dict-form-card">
+        <h2 id="dict-form-title">용어 추가</h2>
+        <p class="hint">내가 추가한 용어는 이 브라우저에만 저장되고, 분석할 때 기본 용어보다 먼저 쓰입니다. 같은 용어를 추가하면 기본 용어를 덮어씁니다. 설명이 확실하지 않으면 "검증 필요 표시"를 체크하세요.</p>
+        <div id="dict-notice" role="status" aria-live="polite"></div>
+        <form id="dict-form" novalidate>
+          <label class="field">
+            <span class="field-label">용어 (영어)</span>
+            <input type="text" id="dict-term" maxlength="40" autocomplete="off" spellcheck="false">
+          </label>
+          <div id="dict-senses" class="senses-edit"></div>
+          <div class="form-actions">
+            <button type="button" id="dict-add-sense" class="btn">의미 추가</button>
+            <button type="submit" id="dict-save" class="btn primary">추가</button>
+            <button type="button" id="dict-cancel" class="btn" hidden>수정 취소</button>
+          </div>
+          <ul id="dict-errors" class="form-errors" role="alert"></ul>
+        </form>
       </section>
 
-      <section class="card" aria-labelledby="anatomy-title">
-        <h2 id="anatomy-title">3. 해부 결과</h2>
-        <p class="hint">단어나 구절을 누르면 설명이 아래에 나타납니다. 색과 함께 요소 이름도 표시됩니다.</p>
-        <div id="anatomy" class="anatomy" role="group" aria-label="요소별로 나눈 프롬프트"></div>
-        <div id="detail" class="detail" aria-live="polite"></div>
-      </section>
-
-      <section class="card" aria-labelledby="reading-title">
-        <h2 id="reading-title">4. 프롬프트가 이렇게 읽힌다</h2>
-        <p class="hint">챗봇에게 설명한 내 의도와 눈으로 비교해 보세요. 이 표는 규칙으로 읽은 결과이며 생성 AI의 실제 해석과 다를 수 있습니다. 사전에 없는 표현은 "분류 못 한 단어"에 들어갑니다.</p>
-        <div id="reading"></div>
-      </section>
-
-      <section class="card" aria-labelledby="warn-title">
-        <h2 id="warn-title">5. 경고</h2>
-        <div id="warnings"></div>
-      </section>
-
-      <section class="card" aria-labelledby="terms-title">
-        <h2 id="terms-title">6. 용어 설명</h2>
-        <ul id="terms" class="terms"></ul>
+      <section class="card" aria-labelledby="dict-list-title">
+        <h2 id="dict-list-title">용어 목록</h2>
+        <p id="dict-count" class="hint"></p>
+        <div class="dict-filters">
+          <label class="field">
+            <span class="field-label">검색 (영어 용어 또는 한국어 설명)</span>
+            <input type="search" id="dict-search" autocomplete="off">
+          </label>
+          <label class="field">
+            <span class="field-label">요소</span>
+            <select id="dict-element"></select>
+          </label>
+          <label class="check-inline"><input type="checkbox" id="dict-only-user"> 내가 추가한 용어만</label>
+        </div>
+        <ul id="dict-list" class="dict-list"></ul>
       </section>
     </div>
   </main>
@@ -81,6 +127,9 @@
   <script src="js/analyzer.js"></script>
   <script src="js/checks.js"></script>
   <script src="js/lookup.js"></script>
+  <script src="js/userdict.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/dictpage.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

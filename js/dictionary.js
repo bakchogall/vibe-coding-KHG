@@ -353,5 +353,28 @@
     ])
   ];
 
-  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS);
+  // ---- 고정 카메라 표현 (영상용) ----
+  // static 단독은 static noise 처럼 다른 뜻이 있어 등록하지 않고, camera 와 함께 쓰인 형태만 등록한다.
+  var STATIC_CAMERA = '카메라가 고정되어 움직이지 않는 화면을 요구함';
+  var STATIC_CAMERA_TERMS = [
+    t('static camera', 'camera_motion', STATIC_CAMERA),
+    t('fixed camera', 'camera_motion', STATIC_CAMERA),
+    t('locked camera', 'camera_motion', STATIC_CAMERA),
+    t('locked-off camera', 'camera_motion', '삼각대 등에 고정해 전혀 움직이지 않는 카메라. 안정적인 고정 화면'),
+    t('stationary camera', 'camera_motion', STATIC_CAMERA),
+    t('tripod shot', 'camera_motion', '삼각대에 고정해 찍은 안정된 화면'),
+    t('camera is static', 'camera_motion', STATIC_CAMERA),
+    t('camera is fixed', 'camera_motion', STATIC_CAMERA),
+    t('camera remains static', 'camera_motion', STATIC_CAMERA),
+    t('camera remains completely static', 'camera_motion', STATIC_CAMERA),
+    t('camera remains still', 'camera_motion', STATIC_CAMERA),
+    t('camera remains fixed', 'camera_motion', STATIC_CAMERA),
+    t('camera stays static', 'camera_motion', STATIC_CAMERA),
+    t('camera stays completely static', 'camera_motion', STATIC_CAMERA),
+    t('camera stays still', 'camera_motion', STATIC_CAMERA),
+    t('camera does not move', 'camera_motion', '카메라가 움직이지 않도록 요구함'),
+    t("camera doesn't move", 'camera_motion', '카메라가 움직이지 않도록 요구함')
+  ];
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS);
 })();

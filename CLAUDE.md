@@ -144,6 +144,7 @@
 - 주제 요소는 영어가 낯선 사람이 모를 만한 단어 위주(주제 의미 91개). 사물과 겹치는 색 이름(orange, rose 등)은 패턴 색 목록에서 빼고 사전에 주제+색 다의어로 둔다. `-ing` 동사 패턴은 오분류 위험으로 제외.
 - `motion`·`movement`는 앞에 어떤 수식어가 붙어도(`flowing motion`, `fast movement`, 단독 포함) **"카메라 움직임(추정)"**으로 분류한다(패턴 규칙 P9, 사용자 요청). 카메라인지 대상의 움직임인지는 문맥에 따라 달라 확정 분류가 아니라 추정으로만 표시하고, 설명에도 그 사실을 적는다. 사전 용어(`motion blur`, `no motion`, `no camera movement`)가 항상 우선한다. 이미지용에서는 영상 전용으로 처리된다.
 - `cityscape`는 배경/장소 용어로 사전에 등록(사용자 요청).
+- 고정 카메라 표현 17개를 카메라 움직임으로 등록(사용자 요청): `static camera`, `fixed camera`, `locked camera`, `locked-off camera`, `stationary camera`, `tripod shot`, `camera is static/fixed`, `camera remains (completely) static/still/fixed`, `camera stays (completely) static/still`, `camera does not move`, `camera doesn't move`. `static` 단독은 `static noise` 같은 다른 뜻이 있어 등록하지 않는다. 기존 "고정↔카메라 움직임" 충돌 쌍의 고정 쪽에 이 표현들을 같은 뜻으로 포함시켰다(새 쌍이 아님).
 - 경고 규칙의 기준과 초기 목록은 화면 1의 "경고 표시"에 기록. 새 충돌 쌍·모호어는 승인받은 것만 추가한다.
 - 공개 API 조사 결과: 사전을 대체하지 못한다(분류 부정확, 요청 제한). Wikipedia·Datamuse는 사용자가 누를 때만 보조로 쓴다. 인증키가 필요한 국립국어원 API는 쓰지 않는다.
 - (6단계에서 정함) 입력은 5,000자까지, 한글이 섞이면 해당 단어는 "분류 못 한 단어"로 표시하고 안내 문구를 보인다. 구두점뿐인 입력은 "분석할 단어가 없습니다"를 보인다.
@@ -156,6 +157,5 @@
 - **배포(7단계, 완료)**: 저장소 `bakchogall/vibe-coding-KHG`(Public), GitHub Pages는 `main` 브랜치 루트에서 배포. 커밋 작성자 이메일은 공개 저장소에 개인 이메일이 드러나지 않도록 GitHub 비공개 주소(`289829282+bakchogall@users.noreply.github.com`)로 바꿔 올렸다(올리기 전에 로컬 기록을 다시 썼고 파일 내용이 한 글자도 바뀌지 않았음을 확인). 이 저장소의 로컬 git 설정도 같은 주소를 쓴다. `README.md`는 과제 안내문 대신 이 도구를 소개하는 내용이다.
 - **알려진 한계(사용자 판단 대기)**:
   1. 사전에 등록된 `no ...` 표현(`no camera movement` 등) 안의 `no`에는 "부정 지시" 안내가 나오지 않는다. 안내를 유지할지.
-  2. `static camera`, `camera remains static`, `locked-off camera` 같은 고정 카메라 표현이 미분류다. 추가할지.
-  3. `no camera movement` ↔ `pan` 같은 움직임 용어의 충돌 쌍을 추가할지.
-  4. 패턴 규칙 P5가 `small blue indicator lights` 같은 사물(지시등)을 조명으로 오분류한다. 복수형 `lights` 머리말을 제외하는 등 완화할지.
+  2. `no camera movement` ↔ `pan` 같은 움직임 용어의 충돌 쌍을 추가할지.
+  3. 패턴 규칙 P5가 `small blue indicator lights` 같은 사물(지시등)을 조명으로 오분류한다. 복수형 `lights` 머리말을 제외하는 등 완화할지.

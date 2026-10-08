@@ -98,9 +98,12 @@
       b: ["bird's eye view", 'top down view', 'top down shot', 'overhead shot', 'overhead view', 'high angle', 'high angle shot',
           'aerial view', 'drone view', 'satellite view'],
       reason: '올려다보는 시점과 내려다보는 시점은 서로 반대입니다.' },
-    { a: ['photorealistic'], b: ['anime', 'watercolor', 'oil painting', 'pixel art'],
+    { a: ['photorealistic', 'hyperrealistic', 'ultra realistic', 'photoreal'],
+      b: ['anime', 'watercolor', 'oil painting', 'pixel art', 'cartoon', 'manga', 'webtoon', 'comic book', 'cel shading',
+          'toon shading', 'line art', 'vector art', 'flat design', '8 bit', '16 bit', 'retro game', 'low poly', 'voxel art', 'claymation'],
       reason: '사실적 표현과 일러스트·회화풍 스타일은 서로 다른 방향입니다.' },
-    { a: ['minimalist'], b: ['highly detailed', 'detailed'],
+    { a: ['minimalist', 'minimalism', 'minimal composition'],
+      b: ['highly detailed', 'detailed', 'intricate', 'intricate details', 'high detail', 'fine detail', 'fine details'],
       reason: '요소를 줄이는 스타일과 세부 묘사를 늘리는 지시는 서로 반대입니다.' }
   ];
 

@@ -9,7 +9,7 @@
 - 도구가 줄 수 있는 것: 요소별 역할·효과 설명, 구조 점검(빠진 요소·충돌·모호), 의도 반영 점검("내가 신경 쓴 요소" 체크 + "프롬프트가 이렇게 읽힌다" 표, 화면 1 참고).
 - 도구가 줄 수 없는 것: 프롬프트가 "잘 작동하는지"의 보장. 규칙 기반이라 위험 신호를 알려줄 뿐이며, 이 한계를 화면에도 정직하게 밝힌다.
 
-> 상태: 개발 중(로드맵 6단계까지 완료, 7단계 배포 남음). 구현된 것: 분석기(`js/analyzer.js`), 패턴 규칙(`js/patterns.js`), 용어 사전(`js/dictionary.js`), 경고 엔진(`js/checks.js`), 외부 조회(`js/lookup.js`), 사용자 사전(`js/userdict.js`), 두 화면(`index.html`, `css/style.css`, `js/ui.js`, `js/dictpage.js`, `js/app.js`). 스크립트 로드 순서: dictionary → patterns → analyzer → checks → lookup → userdict → ui → dictpage → app.
+> 상태: 로드맵 7단계 모두 완료. 배포됨: https://bakchogall.github.io/vibe-coding-KHG/ (저장소: https://github.com/bakchogall/vibe-coding-KHG). 구현된 것: 분석기(`js/analyzer.js`), 패턴 규칙(`js/patterns.js`), 용어 사전(`js/dictionary.js`), 경고 엔진(`js/checks.js`), 외부 조회(`js/lookup.js`), 사용자 사전(`js/userdict.js`), 두 화면(`index.html`, `css/style.css`, `js/ui.js`, `js/dictpage.js`, `js/app.js`). 스크립트 로드 순서: dictionary → patterns → analyzer → checks → lookup → userdict → ui → dictpage → app.
 
 ## 하드 제약 (과제 규칙 — 협상 불가)
 
@@ -153,7 +153,7 @@
 
 ## 남은 확인 사항
 
-- **7단계(배포)**: GitHub 저장소 이름·공개 여부, Pages 설정(루트에서 배포), 커밋에 남는 이메일 공개 여부(저장소가 Public이면 커밋 기록의 이메일이 공개됨).
+- **배포(7단계, 완료)**: 저장소 `bakchogall/vibe-coding-KHG`(Public), GitHub Pages는 `main` 브랜치 루트에서 배포. 커밋 작성자 이메일은 공개 저장소에 개인 이메일이 드러나지 않도록 GitHub 비공개 주소(`289829282+bakchogall@users.noreply.github.com`)로 바꿔 올렸다(올리기 전에 로컬 기록을 다시 썼고 파일 내용이 한 글자도 바뀌지 않았음을 확인). 이 저장소의 로컬 git 설정도 같은 주소를 쓴다. `README.md`는 과제 안내문 대신 이 도구를 소개하는 내용이다.
 - **알려진 한계(사용자 판단 대기)**:
   1. 사전에 등록된 `no ...` 표현(`no camera movement` 등) 안의 `no`에는 "부정 지시" 안내가 나오지 않는다. 안내를 유지할지.
   2. `static camera`, `camera remains static`, `locked-off camera` 같은 고정 카메라 표현이 미분류다. 추가할지.

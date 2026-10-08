@@ -122,13 +122,22 @@
    'there here again already still just only even also too')
     .split(' ').forEach(function (w) { NON_MODIFIER_WORDS[w] = true; });
 
-  // 패턴 수식어: 기능어·문법 단어가 아니고, 그 자리에서 사전 용어로 시작하지 않는 단어
-  function isModifier(units, j, idx) {
-    return !IGNORED_WORDS[units[j].key] && !NON_MODIFIER_WORDS[units[j].key] && !matchAt(units, j, idx);
+  // 패턴 수식어: 기능어·문법 단어가 아니고, 그 자리에서 사전 용어로 시작하지 않는 단어.
+  // allowElements: 머리말 규칙이 허용하는 요소. 한 단어짜리 사전 용어의 의미가 모두 이 요소들이면 수식어로 받아들인다
+  // (예: `flowing`은 피사체 움직임 용어이지만 `flowing motion`에서는 motion 을 꾸미는 수식어다).
+  function isModifier(units, j, idx, allowElements) {
+    if (IGNORED_WORDS[units[j].key] || NON_MODIFIER_WORDS[units[j].key]) return false;
+    var hit = matchAt(units, j, idx);
+    if (!hit) return true;
+    return !!(allowElements && hit.len === 1 && hit.entry.senses.every(function (s) {
+      return allowElements.indexOf(s.element) !== -1;
+    }));
   }
 
   // i 번째 단어에서 시작하는 가장 긴 패턴 일치. 길이가 같으면 먼저 정의된 규칙이 이긴다.
-  function patternAt(units, i, idx, elementMap) {
+  // dictAtStart: 이 위치에 이미 사전 용어가 있을 때. 그때는 움직임 용어를 수식어로 받는 규칙(modifierElements)만
+  // 시험하고, 사전 용어보다 더 길게 일치해야 쓰인다(classifyAt 에서 비교).
+  function patternAt(units, i, idx, elementMap, dictAtStart) {
     var P = PC.PATTERNS;
     if (!P) return null;
     var best = null;
@@ -139,11 +148,11 @@
     var u = units[i];
 
     (P.regex || []).forEach(function (r) {
-      if (r.re.test(u.key)) consider(1, r.id, [{ element: r.element, ko: r.ko + ' (패턴 규칙 ' + r.id + ')' }]);
+      if (!dictAtStart && r.re.test(u.key)) consider(1, r.id, [{ element: r.element, ko: r.ko + ' (패턴 규칙 ' + r.id + ')' }]);
     });
 
     var c = P.color;
-    if (c) {
+    if (c && !dictAtStart) {
       var koColor = '색 이름 (패턴 규칙 ' + c.id + ')';
       if (c.modifiers.indexOf(u.key) !== -1 && u.linkNext &&
           c.names.indexOf(units[i + 1].key) !== -1) consider(2, c.id, [{ element: c.element, ko: koColor }]);
@@ -152,12 +161,13 @@
 
     var maxMods = P.maxModifiers || 0;
     (P.heads || []).forEach(function (h) {
-      for (var k = maxMods; k >= h.min; k--) {
+      if (dictAtStart && !h.modifierElements) return;
+      for (var k = maxMods; k >= (dictAtStart ? 1 : h.min); k--) {
         var headIdx = i + k;
         if (headIdx >= units.length) continue;
         var ok = true;
         for (var j = i; j < headIdx; j++) {
-          if (!units[j].linkNext || !isModifier(units, j, idx)) { ok = false; break; }
+          if (!units[j].linkNext || !isModifier(units, j, idx, h.modifierElements)) { ok = false; break; }
         }
         if (!ok) continue;
         var key = units[headIdx].key;
@@ -216,10 +226,10 @@
     // i 번째 단어에서 시작하는 분류. 사전 일치가 먼저이고, 없을 때만 패턴을 본다.
     function classifyAt(pos) {
       var hit = matchAt(units, pos, idx);
-      if (hit) {
+      var pat = patternAt(units, pos, idx, elementMap, !!hit);
+      if (hit && !(pat && pat.len > hit.len)) {
         return { len: hit.len, term: hit.entry.term, source: hit.entry.source, senses: hit.entry.senses };
       }
-      var pat = patternAt(units, pos, idx, elementMap);
       if (pat) {
         return {
           len: pat.len, term: pat.term, source: 'pattern', rule: pat.rule,

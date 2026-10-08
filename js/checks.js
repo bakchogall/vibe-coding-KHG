@@ -40,6 +40,16 @@
     'moving camera', 'moving shot', 'gliding shot'
   ]);
 
+  // 대상이 크게 움직이는 동작 용어. "no character movement" 같은 지시와 충돌할 수 있다.
+  // 표정·호흡 같은 미세한 움직임과 자연 현상(바람에 흔들리는 풀, 흐르는 물)은 대상의 움직임 금지와 상관없어 뺀다.
+  var SUBJECT_MOVE_TERMS = ['walking', 'running', 'dancing', 'flying', 'jumping', 'spinning', 'floating',
+    'jogging', 'sprinting', 'strolling', 'wandering', 'marching', 'crawling', 'climbing', 'climbing up', 'climbing down',
+    'swimming', 'diving', 'skipping', 'hopping', 'leaping', 'dashing', 'racing', 'charging', 'chasing', 'fleeing',
+    'cycling', 'riding', 'rowing', 'surfing', 'waving', 'pointing', 'clapping', 'hugging', 'reaching', 'throwing',
+    'pushing', 'pulling', 'lifting', 'standing up', 'sitting down', 'turning around', 'flipping', 'somersault', 'backflip',
+    'cartwheel', 'kicking', 'punching', 'fighting', 'boxing', 'wrestling', 'swinging', 'twirling', 'tumbling', 'soaring',
+    'gliding', 'falling', 'plunging', 'sinking', 'rising', 'ascending', 'bouncing', 'rolling', 'sliding', 'walk cycle', 'run cycle'];
+
   // 충돌 가능성이 있는 용어 쌍. 사전 용어(소문자, 하이픈은 공백)끼리 비교한다.
   var CONFLICTS = [
     { a: ['warm tone'], b: ['cool tone'],
@@ -74,7 +84,7 @@
     // 부정형 피사체 움직임("no ...") ↔ 피사체 동작 용어. 표현이 가리키는 대상이 다를 수 있어
     // 카메라 쪽보다 확실하지 않으므로 uncertain 으로 표시한다. no movement/no motion 은 카메라일 수도 있어 여기서만 다룬다.
     { a: ['no character movement', 'no subject movement', 'no object movement', 'no movement', 'no motion'],
-      b: ['walking', 'running', 'dancing', 'flying', 'jumping', 'spinning', 'floating'],
+      b: SUBJECT_MOVE_TERMS,
       uncertain: true,
       reason: '대상이 움직이지 않아야 한다는 지시와 대상이 움직이는 동작을 함께 쓰고 있습니다.' },
     { a: ['indoor'], b: ['outdoor'],

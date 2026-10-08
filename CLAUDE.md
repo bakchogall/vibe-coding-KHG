@@ -146,7 +146,6 @@
   - 진행: 카메라 움직임 **완료**(의미 179개: 팬·틸트, 줌·푸시·풀·달리, 트럭·크레인, 트래킹·흔들림, 궤도·회전, 항공, "camera + 동사" 문장형 32개, 시차·연출 등).
 - 영상 전용 요소 **"전환/편집"** 신설(사용자 승인): 컷(`hard cut`, `jump cut`, `match cut`…), 장면 전환(`dissolve`, `cross fade`, `fade in/out`, `wipe`…), 합성(`double exposure`, `split screen`, `morph`), 속도·시간 효과(`slow motion`, `time lapse`, `speed ramp`, `freeze frame`…), 부정형(`no cuts`, `no dissolves`, `no cross-fades`, `no fade transitions`, `no double exposure`, `no morphing`…)을 시드 41개로 등록. 이미지용에서는 영상 전용으로 처리된다. `slow motion`은 사전 용어라서 패턴 P9(`motion` → 카메라 움직임 추정)보다 우선한다.
 - **부정 안내 묶기(사용자 승인)**: 같은 문장(`. ! ? ;` 줄바꿈으로 구분) 안의 부정 표현(no, not, without, don't)은 "이 문장에 부정 지시가 N곳 있습니다(…)" 안내 하나로 묶는다. 하나뿐이면 기존 문구. 사전에 등록된 `no …` 표현 안의 `no`는 계속 안내하지 않는다.
-- 영상 도구가 이미지를 가리킬 때 만드는 특수 참조 표기(예: `@[이름](id)`)는 일반 입력이 아니므로 고려하지 않는다(사용자 결정).
 - 주제 요소는 영어가 낯선 사람이 모를 만한 단어 위주(주제 의미 91개). 사물과 겹치는 색 이름(orange, rose 등)은 패턴 색 목록에서 빼고 사전에 주제+색 다의어로 둔다. `-ing` 동사 패턴은 오분류 위험으로 제외.
 - `motion`·`movement`는 앞에 어떤 수식어가 붙어도(`flowing motion`, `fast movement`, 단독 포함) **"카메라 움직임(추정)"**으로 분류한다(패턴 규칙 P9, 사용자 요청). 카메라인지 대상의 움직임인지는 문맥에 따라 달라 확정 분류가 아니라 추정으로만 표시하고, 설명에도 그 사실을 적는다. 사전 용어(`motion blur`, `no motion`, `no camera movement`)가 항상 우선한다. 이미지용에서는 영상 전용으로 처리된다.
 - `cityscape`는 배경/장소 용어로 사전에 등록(사용자 요청).

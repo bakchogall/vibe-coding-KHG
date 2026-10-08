@@ -145,6 +145,8 @@
 - `motion`·`movement`는 앞에 어떤 수식어가 붙어도(`flowing motion`, `fast movement`, 단독 포함) **"카메라 움직임(추정)"**으로 분류한다(패턴 규칙 P9, 사용자 요청). 카메라인지 대상의 움직임인지는 문맥에 따라 달라 확정 분류가 아니라 추정으로만 표시하고, 설명에도 그 사실을 적는다. 사전 용어(`motion blur`, `no motion`, `no camera movement`)가 항상 우선한다. 이미지용에서는 영상 전용으로 처리된다.
 - `cityscape`는 배경/장소 용어로 사전에 등록(사용자 요청).
 - `lights`는 조명과 사물(전등·표시등) 두 의미를 가진다(사용자 요청). 사전의 `lights` 단독과, 패턴 규칙 P5의 복수형 머리말(`small blue indicator lights`, `street lights` 등)이 모두 "조명 + 주제(사물)" 두 의미로 처리된다(패턴 결과는 "추정"). 단수형 `light`는 조명 하나만. 패턴 결과도 의미를 여러 개 가질 수 있도록 확장했다(`pluralSenses`).
+- `camera`는 카메라(촬영 장비, 요소 "카메라")와 주제(화면에 등장하는 카메라 사물) 두 의미, `shot`은 구도(샷의 범위)와 카메라 움직임(촬영 방식) 두 의미를 가진다(사용자 요청). `continuous shot` 계열(`one single continuous shot`, `single continuous shot`, `one continuous shot`, `unbroken shot`, `one take`, `single take`, `long take`)은 카메라 움직임으로 등록. 주의: `camera`에 주제 의미가 있어 "주제 있음" 판정이 느슨해진다.
+- 패턴 수식어 자리에 올 수 없는 문법 단어 목록(`NON_MODIFIER_WORDS`: no, not, between, through, while, does 등)을 두었다. `no morphing between backgrounds`가 "배경/장소"로 오분류되던 문제를 막는다.
 - 고정 카메라 표현 17개를 카메라 움직임으로 등록(사용자 요청): `static camera`, `fixed camera`, `locked camera`, `locked-off camera`, `stationary camera`, `tripod shot`, `camera is static/fixed`, `camera remains (completely) static/still/fixed`, `camera stays (completely) static/still`, `camera does not move`, `camera doesn't move`. `static` 단독은 `static noise` 같은 다른 뜻이 있어 등록하지 않는다. 기존 "고정↔카메라 움직임" 충돌 쌍의 고정 쪽에 이 표현들을 같은 뜻으로 포함시켰다(새 쌍이 아님).
 - 경고 규칙의 기준과 초기 목록은 화면 1의 "경고 표시"에 기록. 새 충돌 쌍·모호어는 승인받은 것만 추가한다.
 - 공개 API 조사 결과: 사전을 대체하지 못한다(분류 부정확, 요청 제한). Wikipedia·Datamuse는 사용자가 누를 때만 보조로 쓴다. 인증키가 필요한 국립국어원 API는 쓰지 않는다.

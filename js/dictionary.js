@@ -385,5 +385,28 @@
     ])
   ];
 
-  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS);
+  // ---- camera, shot: 촬영의 핵심 단어 (다의어) ----
+  // camera: 촬영 장비·촬영 방식을 가리키는 말이면서, 화면에 등장하는 사물일 수도 있다.
+  // shot: 한 장면을 담는 단위로 구도(wide shot 등)와 촬영 방식(끊지 않고 이어 찍기 등) 양쪽에 쓰인다.
+  var CONTINUOUS_SHOT = '컷 없이 끊지 않고 이어 찍은 장면. 카메라가 쉬지 않고 이어서 움직이는 연출';
+  var CAMERA_WORD_TERMS = [
+    m('camera', [
+      ['camera', '카메라(촬영 장비). 화면이 어떻게 찍히는지를 가리키는 말과 함께 쓰임'],
+      ['subject', '화면에 등장하는 카메라라는 사물 자체']
+    ]),
+    m('shot', [
+      ['composition', '한 장면을 담는 단위(샷). wide shot·close-up처럼 담는 범위를 나타내는 말과 함께 쓰임'],
+      ['camera_motion', '촬영 방식(컷·테이크). 끊지 않고 이어 찍는지 등 카메라 움직임과 관련된 표현에 붙어 쓰임']
+    ]),
+    t('continuous shot', 'camera_motion', CONTINUOUS_SHOT),
+    t('one continuous shot', 'camera_motion', CONTINUOUS_SHOT),
+    t('single continuous shot', 'camera_motion', CONTINUOUS_SHOT),
+    t('one single continuous shot', 'camera_motion', CONTINUOUS_SHOT),
+    t('unbroken shot', 'camera_motion', CONTINUOUS_SHOT),
+    t('one take', 'camera_motion', '한 번의 테이크로 끊지 않고 이어 찍음'),
+    t('single take', 'camera_motion', '한 번의 테이크로 끊지 않고 이어 찍음'),
+    t('long take', 'camera_motion', '컷 없이 오래 이어 찍는 긴 테이크')
+  ];
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS, CAMERA_WORD_TERMS);
 })();

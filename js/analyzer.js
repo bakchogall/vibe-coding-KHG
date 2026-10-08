@@ -112,9 +112,19 @@
     return null;
   }
 
-  // 패턴 수식어: 기능어가 아니고, 그 자리에서 사전 용어로 시작하지 않는 단어
+  // 패턴 수식어가 될 수 없는 단어: 부정어·전치사·접속사·조동사 등 문법 단어.
+  // 이런 단어가 수식어 자리에 끼면 "no morphing between backgrounds"처럼 엉뚱한 구절이 패턴에 걸린다.
+  var NON_MODIFIER_WORDS = {};
+  ('no not never without between through throughout down up off away toward towards behind inside outside ' +
+   'against past while until after before during than then but so if when where which who whose how what ' +
+   'does do did has have had was were been being will would should can could may might must ' +
+   'across along around above below beside beyond within upon about each every any some all both either neither ' +
+   'there here again already still just only even also too')
+    .split(' ').forEach(function (w) { NON_MODIFIER_WORDS[w] = true; });
+
+  // 패턴 수식어: 기능어·문법 단어가 아니고, 그 자리에서 사전 용어로 시작하지 않는 단어
   function isModifier(units, j, idx) {
-    return !IGNORED_WORDS[units[j].key] && !matchAt(units, j, idx);
+    return !IGNORED_WORDS[units[j].key] && !NON_MODIFIER_WORDS[units[j].key] && !matchAt(units, j, idx);
   }
 
   // i 번째 단어에서 시작하는 가장 긴 패턴 일치. 길이가 같으면 먼저 정의된 규칙이 이긴다.

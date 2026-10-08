@@ -1398,6 +1398,145 @@
     ])
   ));
 
+  // ---- 품질/해상도: 해상도·선명도·품질 관용 표현·렌더링 용어·부정형 ----
+  EXPANSION_TERMS.push.apply(EXPANSION_TERMS, [].concat(
+    bulk('quality', [
+      ['hd', 'HD(고화질). 선명한 화질을 요구'],
+      ['full hd', '풀HD(1920×1080) 해상도'],
+      ['1080p', '1080p 해상도(풀HD). 선명한 화질을 요구'],
+      ['1440p', '1440p 해상도(QHD)'],
+      ['2k', '2K 해상도(가로 약 2000픽셀)'],
+      ['16k', '16K 해상도. 매우 높은 화질을 요구(실제 출력은 도구에 따라 다름)'],
+      ['4k resolution', '4K 해상도를 요구함'],
+      ['8k resolution', '8K 해상도를 요구함'],
+      ['uhd', 'UHD(초고화질). 4K 이상의 선명한 화질'],
+      ['ultra high resolution', '아주 높은 해상도를 요구함'],
+      ['high definition', '고화질(HD)'],
+      ['low resolution', '낮은 해상도. 뭉개지고 거친 화질'],
+      ['low res', '낮은 해상도. 뭉개지고 거친 화질']
+    ]),
+    // 화질 결함 표현
+    bulk('quality', [
+      ['pixelated', '픽셀이 깨져 네모난 알갱이가 보이는 화질'],
+      ['blurry', '흐릿하게 뭉개진 화질'],
+      ['jpeg artifacts', '압축 때문에 생기는 네모난 얼룩과 깨짐'],
+      ['artifacts', '생성이나 압축 과정에서 생기는 이상한 흔적']
+    ]),
+    // 세부·선명도
+    bulk('quality', [
+      ['intricate', '정교하고 복잡하게 세부가 얽힌'],
+      ['fine detail', '섬세한 세부 묘사'],
+      ['crisp details', '또렷하고 깔끔한 세부'],
+      ['crisp', '또렷하고 깔끔한 선명함'],
+      ['sharp details', '또렷한 세부 묘사'],
+      ['clarity', '맑고 또렷한 선명도'],
+      ['crystal clear', '아주 맑고 또렷한 화질'],
+      ['razor sharp', '면도날처럼 아주 또렷하게 선명함'],
+      ['high detail', '세부가 풍부함'],
+      ['detailed textures', '질감 표현이 세밀함']
+    ]),
+    // 품질 관용 표현(구체적 효과는 모델 해석에 따름)
+    bulk('quality', [
+      ['best quality', '가장 높은 품질을 요구하는 관용 표현. 구체적인 효과는 모델 해석에 따름'],
+      ['top quality', '가장 높은 품질을 요구하는 관용 표현. 구체적인 효과는 모델 해석에 따름'],
+      ['highest quality', '가장 높은 품질을 요구하는 관용 표현. 구체적인 효과는 모델 해석에 따름'],
+      ['premium quality', '고급스러운 품질을 요구하는 표현'],
+      ['professional quality', '전문가 수준의 품질을 요구하는 표현'],
+      ['studio quality', '스튜디오에서 찍은 듯한 깔끔한 품질'],
+      ['cinematic quality', '영화 같은 완성도를 요구하는 표현'],
+      ['film quality', '필름 영화 같은 질감과 완성도'],
+      ['flawless', '흠 없이 완벽하게 매끈함'],
+      ['polished', '다듬어져 매끈하고 완성도 높음']
+    ]),
+    // 렌더링 기법
+    bulk('quality', [
+      ['ray tracing', '빛의 반사와 그림자를 정확히 계산한 사실적인 렌더링'],
+      ['path tracing', '빛의 경로를 정밀하게 계산한 사실적인 렌더링'],
+      ['global illumination', '빛이 주변에 반사되어 퍼지는 간접광을 반영한 렌더링'],
+      ['subsurface scattering', '피부·왁스처럼 빛이 안으로 스며 퍼지는 반투명한 질감 표현'],
+      ['ambient occlusion', '맞닿은 틈이나 구석에 생기는 은은한 그림자 표현'],
+      ['physically based rendering', '실제 물질의 빛 반응을 따른 사실적인 질감 렌더링']
+    ]),
+    // 영상 품질
+    bulk('quality', [
+      ['high frame rate', '프레임이 많아 움직임이 아주 부드러움'],
+      ['temporal consistency', '시간이 지나도 모습이 흔들리지 않고 일관되게 유지됨'],
+      ['flicker free', '깜빡임 없이 안정된 화면']
+    ]),
+    // 부정형 품질 지시
+    bulk('quality', [
+      ['no blur', '흐림 없이 선명하길 요구함'],
+      ['no noise', '노이즈 없이 깨끗하길 요구함'],
+      ['no artifacts', '이상한 흔적 없이 깨끗하길 요구함'],
+      ['no distortion', '모양이 일그러지지 않길 요구함'],
+      ['no deformation', '모양이 변형되지 않고 유지되길 요구함'],
+      ['no warping', '모양이 휘거나 뒤틀리지 않길 요구함'],
+      ['no flicker', '깜빡임 없이 안정되길 요구함'],
+      ['no watermark', '워터마크가 없길 요구함'],
+      ['no text overlay', '화면 위에 덧씌운 글자가 없길 요구함'],
+      ['no logo', '로고가 없길 요구함']
+    ]),
+    // blurry 가 사전 용어가 되면서 갈라지는 배경 흐림 표현(카메라 효과)
+    bulk('camera', [
+      ['blurry background', '배경이 흐려져 대상이 돋보임'],
+      ['blurred background', '배경이 흐려져 대상이 돋보임']
+    ])
+  ));
+
+  // ---- 가중치/수식어: 강도·정도·수량 표현 (뒤따르는 말의 정도를 조절) ----
+  EXPANSION_TERMS.push.apply(EXPANSION_TERMS, [].concat(
+    // 강하게
+    bulk('intensity', [
+      ['insanely', '말도 안 될 만큼 매우'],
+      ['absurdly', '터무니없을 만큼 매우'],
+      ['immensely', '엄청나게'],
+      ['enormously', '거대하게, 엄청나게'],
+      ['tremendously', '굉장히'],
+      ['deeply', '깊이, 매우'],
+      ['utterly', '완전히'],
+      ['completely', '완전히'],
+      ['totally', '전적으로'],
+      ['perfectly', '완벽하게'],
+      ['truly', '정말로'],
+      ['especially', '특히'],
+      ['particularly', '특히'],
+      ['extraordinarily', '비범할 만큼'],
+      ['extra', '더, 한층'],
+      ['intense', '강렬한'],
+      ['dramatic', '극적으로 강한'],
+      ['more', '더'],
+      ['much more', '훨씬 더']
+    ]),
+    // 약하게
+    bulk('intensity', [
+      ['barely', '거의 ~하지 않을 만큼'],
+      ['faintly', '희미하게'],
+      ['gently', '부드럽게, 약하게'],
+      ['lightly', '가볍게, 약하게'],
+      ['a little', '조금'],
+      ['a bit', '약간'],
+      ['a little bit', '조금'],
+      ['subtly', '은은하게'],
+      ['delicately', '섬세하게, 연하게'],
+      ['a hint of', '살짝 느껴질 정도의'],
+      ['a touch of', '아주 조금 가미한'],
+      ['mild', '약한, 순한'],
+      ['less', '덜']
+    ]),
+    // 수량·밀도
+    bulk('intensity', [
+      ['many', '많은'],
+      ['lots of', '많은'],
+      ['a lot of', '많은'],
+      ['countless', '셀 수 없이 많은'],
+      ['numerous', '수많은'],
+      ['several', '여러 개의'],
+      ['a few', '몇 개의'],
+      ['dense', '빽빽하고 조밀한'],
+      ['sparse', '듬성듬성한']
+    ])
+  ));
+
   /*__EXPANSION_BLOCKS__*/
 
   PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS, CAMERA_WORD_TERMS, CAMERA_MOTION_TERMS, TRANSITION_TERMS, EXPANSION_TERMS);

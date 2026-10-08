@@ -60,7 +60,7 @@
 - 경고 표시(`js/checks.js`, `check(analysis, { wanted })`): 심각도 `warning`(높음)/`notice`(낮음), 순서 고정.
   - 빠진 요소: 주제(소거법: 주제로 분류된 구간 또는 미분류 내용어가 있으면 "있음", 없으면 warning), 사용자가 `wanted`로 체크한 요소(없으면 warning), 권장 요소 스타일·조명·구도·색(+영상용 카메라 움직임·피사체 움직임)(없으면 notice). 카메라·품질·수식어·배경은 점검하지 않는다. 다의어는 모든 의미를 인정한다. 사전에 없는 표현일 수 있다는 한계를 메시지에 밝힌다.
   - 카테고리 불일치: 이미지용에 영상 전용 용어가 있으면 구간마다 notice.
-  - 충돌 가능성: 사전 용어 11쌍(따뜻한/차가운 색조, 흑백↔선명·파스텔, 선명↔채도 낮음, 클로즈업↔와이드, 확대↔축소, 고정↔카메라 움직임, 실내↔야외, 중앙↔삼분할, 올려봄↔내려봄, 사실적↔일러스트·회화풍, 미니멀↔세부 묘사). 새 쌍은 승인받은 것만 추가한다.
+  - 충돌 가능성: 사전 용어 16쌍(부정형 카메라 움직임 5쌍 포함: `no camera movement/motion` ↔ pan·tilt·dolly in·tracking shot·handheld·orbit·zoom in/out, `no camera shake` ↔ handheld, `no zoom` ↔ zoom in/out, `no pan(ning)` ↔ pan, `no tilt` ↔ tilt. `no movement`/`no motion`은 카메라인지 대상인지 불분명해 제외, `drone shot`도 촬영 시점이기도 해서 제외. 기존 11쌍:따뜻한/차가운 색조, 흑백↔선명·파스텔, 선명↔채도 낮음, 클로즈업↔와이드, 확대↔축소, 고정↔카메라 움직임, 실내↔야외, 중앙↔삼분할, 올려봄↔내려봄, 사실적↔일러스트·회화풍, 미니멀↔세부 묘사). 새 쌍은 승인받은 것만 추가한다.
   - 모호한 표현: 평가어 15개, 불확실한 표현(maybe, perhaps, something, stuff, etc, kind of, sort of), 부정 표현(no, not, without, don't — 모델 경향이라 `검증 필요`로 표시).
 
 ### 2. 용어 사전 화면
@@ -157,5 +157,4 @@
 - **배포(7단계, 완료)**: 저장소 `bakchogall/vibe-coding-KHG`(Public), GitHub Pages는 `main` 브랜치 루트에서 배포. 커밋 작성자 이메일은 공개 저장소에 개인 이메일이 드러나지 않도록 GitHub 비공개 주소(`289829282+bakchogall@users.noreply.github.com`)로 바꿔 올렸다(올리기 전에 로컬 기록을 다시 썼고 파일 내용이 한 글자도 바뀌지 않았음을 확인). 이 저장소의 로컬 git 설정도 같은 주소를 쓴다. `README.md`는 과제 안내문 대신 이 도구를 소개하는 내용이다.
 - **알려진 한계(사용자 판단 대기)**:
   1. 사전에 등록된 `no ...` 표현(`no camera movement` 등) 안의 `no`에는 "부정 지시" 안내가 나오지 않는다. 안내를 유지할지.
-  2. `no camera movement` ↔ `pan` 같은 움직임 용어의 충돌 쌍을 추가할지.
-  3. 패턴 규칙 P5가 `small blue indicator lights` 같은 사물(지시등)을 조명으로 오분류한다. 복수형 `lights` 머리말을 제외하는 등 완화할지.
+  2. 패턴 규칙 P5가 `small blue indicator lights` 같은 사물(지시등)을 조명으로 오분류한다. 복수형 `lights` 머리말을 제외하는 등 완화할지.

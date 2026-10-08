@@ -16,7 +16,8 @@
     { id: 'quality',        ko: '품질/해상도',   appliesTo: ['image', 'video'] },
     { id: 'intensity',      ko: '가중치/수식어', appliesTo: ['image', 'video'] },
     { id: 'camera_motion',  ko: '카메라 움직임', appliesTo: ['video'] },
-    { id: 'subject_motion', ko: '피사체 움직임', appliesTo: ['video'] }
+    { id: 'subject_motion', ko: '피사체 움직임', appliesTo: ['video'] },
+    { id: 'transition',     ko: '전환/편집',     appliesTo: ['video'] }
   ];
 
   var UNVERIFIED = '검증 필요';
@@ -581,5 +582,70 @@
     ]
   );
 
-  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS, CAMERA_WORD_TERMS, CAMERA_MOTION_TERMS);
+  // ---- 전환/편집 (영상용) ----
+  // 컷·장면 전환·합성·속도 조절 같은 편집 효과. 카메라 움직임이 아니라 편집으로 만드는 효과를 담는다.
+  // "no ..." 부정형은 no 가 붙어야 지시가 되므로 따로 등록한다(등록된 표현 안의 no 에는 부정 안내가 나오지 않는다).
+  function tr(pairs) {
+    return pairs.map(function (p) { return t(p[0], 'transition', p[1]); });
+  }
+  var TRANSITION_TERMS = [].concat(
+    // 컷
+    tr([
+      ['hard cut', '장면을 이어 붙이지 않고 곧바로 다른 장면으로 끊어 넘어감'],
+      ['jump cut', '같은 장면의 시간을 건너뛰듯 끊어 붙여 화면이 툭 튀는 느낌'],
+      ['match cut', '모양이나 움직임이 비슷한 두 장면을 이어 붙여 자연스럽게 넘어가는 컷'],
+      ['smash cut', '조용한 장면에서 갑자기 강한 장면으로 확 끊어 넘어가는 컷'],
+      ['cross cut', '서로 다른 장소의 장면을 번갈아 보여 주는 컷'],
+      ['quick cut', '짧은 컷을 빠르게 이어 붙여 속도감을 주는 편집'],
+      ['cutaway', '주된 장면 사이에 다른 장면을 끼워 넣는 컷']
+    ]),
+    // 장면 전환
+    tr([
+      ['dissolve', '한 장면이 서서히 사라지며 다음 장면이 겹쳐 나타나는 전환'],
+      ['cross dissolve', '한 장면이 서서히 사라지며 다음 장면이 겹쳐 나타나는 전환'],
+      ['cross fade', '앞 장면이 옅어지며 다음 장면이 겹쳐 나타나는 전환'],
+      ['fade in', '어두운 화면에서 서서히 밝아지며 장면이 나타남'],
+      ['fade out', '장면이 서서히 어두워지며 사라짐'],
+      ['fade to black', '장면이 서서히 검은 화면으로 사라짐'],
+      ['fade to white', '장면이 서서히 흰 화면으로 사라짐'],
+      ['wipe', '새 장면이 한쪽에서 밀고 들어오며 이전 장면을 지우는 전환'],
+      ['whip transition', '카메라를 휙 돌려 흐려진 화면을 이용해 다음 장면으로 넘어가는 전환'],
+      ['smooth transition', '장면이 부드럽게 이어지는 전환'],
+      ['seamless transition', '이음매 없이 자연스럽게 이어지는 전환']
+    ]),
+    // 합성·변형
+    tr([
+      ['double exposure', '두 장면을 겹쳐 한 화면에 비치게 합성한 효과'],
+      ['split screen', '화면을 나눠 여러 장면을 동시에 보여 줌'],
+      ['morph', '한 모양이나 장면이 다른 모양이나 장면으로 매끄럽게 변하는 효과'],
+      ['morphing', '한 모양이나 장면이 다른 모양이나 장면으로 매끄럽게 변하는 효과']
+    ]),
+    // 속도·시간 효과
+    tr([
+      ['slow motion', '동작을 느리게 보여 주는 효과. 순간의 디테일이 강조됨'],
+      ['slow-mo', '동작을 느리게 보여 주는 효과. 순간의 디테일이 강조됨'],
+      ['fast motion', '동작을 빠르게 보여 주는 효과'],
+      ['speed ramp', '재생 속도를 중간에 빠르게 하거나 느리게 바꾸는 효과'],
+      ['time lapse', '오랜 시간을 짧게 압축해 빠르게 보여 주는 효과(구름·해의 이동 등)'],
+      ['timelapse', '오랜 시간을 짧게 압축해 빠르게 보여 주는 효과(구름·해의 이동 등)'],
+      ['hyperlapse', '카메라가 이동하며 찍은 타임랩스. 빠르게 지나가는 이동감'],
+      ['reverse motion', '영상을 거꾸로 재생하는 효과'],
+      ['freeze frame', '한 장면에서 화면을 멈춤']
+    ]),
+    // 부정형: 이런 편집 효과를 쓰지 말라는 지시 (no cuts → 'no cut' 으로 복수형 처리)
+    tr([
+      ['no cut', '컷 없이 장면이 끊기지 않고 이어지길 요구함'],
+      ['no jump cut', '화면이 튀는 점프 컷 없이 이어지길 요구함'],
+      ['no dissolve', '장면이 겹쳐 사라지는 전환을 쓰지 말라고 요구함'],
+      ['no cross fade', '앞 장면이 옅어지며 겹치는 전환을 쓰지 말라고 요구함'],
+      ['no fade', '서서히 밝아지거나 어두워지는 페이드를 쓰지 말라고 요구함'],
+      ['no fade transition', '서서히 밝아지거나 어두워지는 페이드 전환을 쓰지 말라고 요구함'],
+      ['no transition', '장면 전환 없이 한 장면으로 이어지길 요구함'],
+      ['no double exposure', '두 장면을 겹쳐 합성하지 말라고 요구함'],
+      ['no morph', '모양이 변하며 이어지는 합성 효과를 쓰지 말라고 요구함'],
+      ['no morphing', '모양이 변하며 이어지는 합성 효과를 쓰지 말라고 요구함']
+    ])
+  );
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS, CAMERA_WORD_TERMS, CAMERA_MOTION_TERMS, TRANSITION_TERMS);
 })();

@@ -27,6 +27,7 @@
   --c-intensity: #d7ccc8;
   --c-camera_motion: #b2dfdb;
   --c-subject_motion: #c5cae9;
+  --c-transition: #dcedc8;
 }
 
 * { box-sizing: border-box; }

@@ -229,6 +229,7 @@
       });
     }
     var phrases = UNCERTAIN_PHRASES.map(norm);
+    var negHits = []; // 부정 표현은 모아서 같은 문장끼리 안내 하나로 묶는다(no cuts, no dissolves, …)
     for (var i = 0; i < tokens.length; i++) {
       var t = tokens[i];
       if (insideClassified(t.start, t.end)) continue;
@@ -241,10 +242,7 @@
         continue;
       }
       if (NEG_SET[t.key]) {
-        add('negation', 'notice', {
-          term: raw, start: t.start, end: t.end, verified: false,
-          message: "'" + raw + "'은(는) 부정 지시입니다. 부정 지시는 모델에 따라 반대로 반영되기도 합니다. 빼고 싶은 것은 별도 입력 항목이 있는지 확인하세요. (검증 필요)"
-        });
+        negHits.push({ raw: raw, start: t.start, end: t.end });
         continue;
       }
       // 불확실한 표현: 두 단어 구절을 먼저, 그다음 한 단어
@@ -270,6 +268,34 @@
         });
       }
     }
+
+    // 부정 표현: 문장(. ! ? ; 줄바꿈으로 구분)마다 안내 하나
+    function sentenceId(pos) {
+      var n = 0;
+      for (var k = 0; k < pos; k++) if (/[.!?;\n]/.test(text.charAt(k))) n++;
+      return n;
+    }
+    var negGroups = [], negIndex = {};
+    negHits.forEach(function (hit) {
+      var id = sentenceId(hit.start);
+      if (negIndex[id] === undefined) { negIndex[id] = negGroups.length; negGroups.push([]); }
+      negGroups[negIndex[id]].push(hit);
+    });
+    var NEG_ADVICE = '부정 지시는 모델에 따라 반대로 반영되기도 합니다. 빼고 싶은 것은 별도 입력 항목이 있는지 확인하세요. (검증 필요)';
+    negGroups.forEach(function (group) {
+      var first = group[0], last = group[group.length - 1];
+      var fields = { term: first.raw, start: first.start, end: last.end, verified: false };
+      if (group.length === 1) {
+        fields.message = "'" + first.raw + "'은(는) 부정 지시입니다. " + NEG_ADVICE;
+      } else {
+        fields.terms = group.map(function (h) { return h.raw; });
+        fields.count = group.length;
+        fields.term = fields.terms.join(', ');
+        fields.message = '이 문장에 부정 지시가 ' + group.length + '곳 있습니다(' +
+          fields.terms.map(function (r) { return "'" + r + "'"; }).join(', ') + '). ' + NEG_ADVICE;
+      }
+      add('negation', 'notice', fields);
+    });
 
     // 정렬: 심각도 → 종류 → 발견 순서(고정)
     found.sort(function (a, b) {

@@ -241,6 +241,7 @@
     result.warnings.forEach(function (w) {
       var head = [h('span', { class: 'level', text: LEVEL_LABEL[w.level] || w.level })];
       if (w.verified === false) head.push(h('span', { class: 'badge', text: '검증 필요' }));
+      if (w.uncertain) head.push(h('span', { class: 'badge', text: '확실하지 않음' }));
       if (typeof w.start === 'number') {
         head.push(h('button', {
           type: 'button', class: 'btn small', text: '위치 보기',

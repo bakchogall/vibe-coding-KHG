@@ -122,21 +122,22 @@
     var P = PC.PATTERNS;
     if (!P) return null;
     var best = null;
-    function consider(len, rule, element, ko) {
-      if (!best || len > best.len) best = { len: len, rule: rule, element: element, ko: ko };
+    // senses: [{ element, ko }, ...] — 패턴 결과도 사전처럼 의미를 여러 개 가질 수 있다.
+    function consider(len, rule, senses) {
+      if (!best || len > best.len) best = { len: len, rule: rule, senses: senses };
     }
     var u = units[i];
 
     (P.regex || []).forEach(function (r) {
-      if (r.re.test(u.key)) consider(1, r.id, r.element, r.ko + ' (패턴 규칙 ' + r.id + ')');
+      if (r.re.test(u.key)) consider(1, r.id, [{ element: r.element, ko: r.ko + ' (패턴 규칙 ' + r.id + ')' }]);
     });
 
     var c = P.color;
     if (c) {
       var koColor = '색 이름 (패턴 규칙 ' + c.id + ')';
       if (c.modifiers.indexOf(u.key) !== -1 && u.linkNext &&
-          c.names.indexOf(units[i + 1].key) !== -1) consider(2, c.id, c.element, koColor);
-      if (c.names.indexOf(u.key) !== -1) consider(1, c.id, c.element, koColor);
+          c.names.indexOf(units[i + 1].key) !== -1) consider(2, c.id, [{ element: c.element, ko: koColor }]);
+      if (c.names.indexOf(u.key) !== -1) consider(1, c.id, [{ element: c.element, ko: koColor }]);
     }
 
     var maxMods = P.maxModifiers || 0;
@@ -151,10 +152,16 @@
         if (!ok) continue;
         var key = units[headIdx].key;
         if (key !== h.head && pluralStems(key).indexOf(h.head) === -1) continue;
-        var el = elementMap[h.element];
-        consider(k + 1, h.id, h.element,
-          '"' + h.head + '"로 끝나는 표현 → ' + (el ? el.ko : h.element) + ' (패턴 규칙 ' + h.id + ')' +
-          (h.note ? ' · ' + h.note : ''));
+        // 복수형(lights 등)에 따로 정한 의미가 있으면 그것을 쓴다(예: 조명 + 사물의 두 뜻).
+        var isPlural = key !== h.head;
+        var chosen = (isPlural && h.pluralSenses) ? h.pluralSenses : [{ element: h.element }];
+        consider(k + 1, h.id, chosen.map(function (cs) {
+          var el = elementMap[cs.element];
+          var ko = cs.ko ||
+            '"' + h.head + '"로 끝나는 표현 → ' + (el ? el.ko : cs.element) + ' (패턴 규칙 ' + h.id + ')' +
+            (h.note ? ' · ' + h.note : '');
+          return { element: cs.element, ko: ko };
+        }));
         break;
       }
     });
@@ -206,7 +213,7 @@
       if (pat) {
         return {
           len: pat.len, term: pat.term, source: 'pattern', rule: pat.rule,
-          senses: [{ element: pat.element, ko: pat.ko, verified: true }]
+          senses: pat.senses.map(function (s) { return { element: s.element, ko: s.ko, verified: true }; })
         };
       }
       return null;

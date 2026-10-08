@@ -376,5 +376,14 @@
     t("camera doesn't move", 'camera_motion', '카메라가 움직이지 않도록 요구함')
   ];
 
-  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS);
+  // ---- lights: 조명(빛)일 수도, 전등·표시등 같은 사물일 수도 있는 다의어 ----
+  // 앞에 수식어가 붙은 형태(indicator lights 등)는 패턴 규칙 P5가 같은 두 의미로 처리한다.
+  var LIGHTS_TERMS = [
+    m('lights', [
+      ['lighting', '장면을 비추는 빛(조명)'],
+      ['subject', '전등·표시등 같은 조명 기구(사물)']
+    ])
+  ];
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS);
 })();

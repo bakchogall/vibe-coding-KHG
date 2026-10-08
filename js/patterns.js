@@ -37,7 +37,12 @@
     // P5~P8: (수식어 min~3개) + 머리말 단어. 머리말 단어는 복수형도 인정한다.
     // min: 필요한 최소 수식어 수. 0이면 머리말 단어만 있어도 분류한다.
     heads: [
-      { id: 'P5', element: 'lighting', head: 'light',        min: 1 },
+      // lights(복수형)는 조명일 수도, 전등·표시등 같은 사물일 수도 있어 두 의미를 모두 준다.
+      { id: 'P5', element: 'lighting', head: 'light',        min: 1,
+        pluralSenses: [
+          { element: 'lighting', ko: '"lights"로 끝나는 표현 → 조명 (패턴 규칙 P5)' },
+          { element: 'subject',  ko: '"lights"는 전등·표시등 같은 사물을 가리킬 수도 있어 주제(사물)로도 추정 (패턴 규칙 P5)' }
+        ] },
       { id: 'P5', element: 'lighting', head: 'lighting',     min: 0 },
       { id: 'P6', element: 'style',    head: 'style',        min: 1 },
       { id: 'P6', element: 'camera',   head: 'lens',         min: 0 },

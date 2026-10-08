@@ -44,6 +44,12 @@
       reason: '카메라를 좌우로 돌리지 말라는 지시와 좌우로 도는 동작이 함께 있습니다.' },
     { a: ['no tilt'], b: ['tilt'],
       reason: '카메라를 위아래로 꺾지 말라는 지시와 위아래로 꺾는 동작이 함께 있습니다.' },
+    // 부정형 피사체 움직임("no ...") ↔ 피사체 동작 용어. 표현이 가리키는 대상이 다를 수 있어
+    // 카메라 쪽보다 확실하지 않으므로 uncertain 으로 표시한다. no movement/no motion 은 카메라일 수도 있어 여기서만 다룬다.
+    { a: ['no character movement', 'no subject movement', 'no object movement', 'no movement', 'no motion'],
+      b: ['walking', 'running', 'dancing', 'flying', 'jumping', 'spinning', 'floating'],
+      uncertain: true,
+      reason: '대상이 움직이지 않아야 한다는 지시와 대상이 움직이는 동작을 함께 쓰고 있습니다.' },
     { a: ['indoor'], b: ['outdoor'],
       reason: '실내와 야외는 서로 반대 장소입니다.' },
     { a: ['centered'], b: ['rule of thirds'],
@@ -174,12 +180,14 @@
     CONFLICTS.forEach(function (c) {
       var sa = findTerm(c.a), sb = findTerm(c.b);
       if (!sa || !sb) return;
-      add('conflict', 'notice', {
+      var fields = {
         terms: [sa.text, sb.text],
         start: Math.min(sa.start, sb.start), end: Math.max(sa.end, sb.end),
-        message: "충돌 가능성: '" + sa.text + "' ↔ '" + sb.text + "'. " + c.reason +
-          ' 의도한 조합이 아니라면 하나를 고르세요.'
-      });
+        message: (c.uncertain ? '충돌 가능성(확실하지 않음)' : '충돌 가능성') + ": '" + sa.text + "' ↔ '" + sb.text + "'. " + c.reason +
+          (c.uncertain ? ' 표현이 가리키는 대상이 서로 다를 수 있어 의도한 조합일 수도 있습니다.' : ' 의도한 조합이 아니라면 하나를 고르세요.')
+      };
+      if (c.uncertain) fields.uncertain = true;
+      add('conflict', 'notice', fields);
     });
 
     // W4. 모호한 표현 · 불확실한 표현 · 부정 표현 (원문 단어 기준, 사전에 분류된 구간 안은 제외)

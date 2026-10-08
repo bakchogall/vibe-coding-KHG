@@ -60,7 +60,7 @@
 - 경고 표시(`js/checks.js`, `check(analysis, { wanted })`): 심각도 `warning`(높음)/`notice`(낮음), 순서 고정.
   - 빠진 요소: 주제(소거법: 주제로 분류된 구간 또는 미분류 내용어가 있으면 "있음", 없으면 warning), 사용자가 `wanted`로 체크한 요소(없으면 warning), 권장 요소 스타일·조명·구도·색(+영상용 카메라 움직임·피사체 움직임)(없으면 notice). 카메라·품질·수식어·배경은 점검하지 않는다. 다의어는 모든 의미를 인정한다. 사전에 없는 표현일 수 있다는 한계를 메시지에 밝힌다.
   - 카테고리 불일치: 이미지용에 영상 전용 용어가 있으면 구간마다 notice.
-  - 충돌 가능성: 사전 용어 16쌍(부정형 카메라 움직임 5쌍 포함: `no camera movement/motion` ↔ pan·tilt·dolly in·tracking shot·handheld·orbit·zoom in/out, `no camera shake` ↔ handheld, `no zoom` ↔ zoom in/out, `no pan(ning)` ↔ pan, `no tilt` ↔ tilt. `no movement`/`no motion`은 카메라인지 대상인지 불분명해 제외, `drone shot`도 촬영 시점이기도 해서 제외. 기존 11쌍:따뜻한/차가운 색조, 흑백↔선명·파스텔, 선명↔채도 낮음, 클로즈업↔와이드, 확대↔축소, 고정↔카메라 움직임, 실내↔야외, 중앙↔삼분할, 올려봄↔내려봄, 사실적↔일러스트·회화풍, 미니멀↔세부 묘사). 새 쌍은 승인받은 것만 추가한다.
+  - 충돌 가능성: 사전 용어 17쌍(부정형 카메라 움직임 5쌍 포함: `no camera movement/motion` ↔ pan·tilt·dolly in·tracking shot·handheld·orbit·zoom in/out, `no camera shake` ↔ handheld, `no zoom` ↔ zoom in/out, `no pan(ning)` ↔ pan, `no tilt` ↔ tilt. `drone shot`은 촬영 시점이기도 해서 제외. 부정형 피사체 움직임 1쌍: `no character/subject/object movement`, `no movement`, `no motion` ↔ walking·running·dancing·flying·jumping·spinning·floating — 표현이 가리키는 대상이 서로 다를 수 있어 **"충돌 가능성(확실하지 않음)"**으로 표시하고 화면에 "확실하지 않음" 배지를 붙인다(`uncertain`). `no movement`/`no motion`은 카메라 쪽 쌍에는 넣지 않는다. 기존 11쌍:따뜻한/차가운 색조, 흑백↔선명·파스텔, 선명↔채도 낮음, 클로즈업↔와이드, 확대↔축소, 고정↔카메라 움직임, 실내↔야외, 중앙↔삼분할, 올려봄↔내려봄, 사실적↔일러스트·회화풍, 미니멀↔세부 묘사). 새 쌍은 승인받은 것만 추가한다.
   - 모호한 표현: 평가어 15개, 불확실한 표현(maybe, perhaps, something, stuff, etc, kind of, sort of), 부정 표현(no, not, without, don't — 모델 경향이라 `검증 필요`로 표시).
 
 ### 2. 용어 사전 화면
@@ -144,6 +144,7 @@
 - 주제 요소는 영어가 낯선 사람이 모를 만한 단어 위주(주제 의미 91개). 사물과 겹치는 색 이름(orange, rose 등)은 패턴 색 목록에서 빼고 사전에 주제+색 다의어로 둔다. `-ing` 동사 패턴은 오분류 위험으로 제외.
 - `motion`·`movement`는 앞에 어떤 수식어가 붙어도(`flowing motion`, `fast movement`, 단독 포함) **"카메라 움직임(추정)"**으로 분류한다(패턴 규칙 P9, 사용자 요청). 카메라인지 대상의 움직임인지는 문맥에 따라 달라 확정 분류가 아니라 추정으로만 표시하고, 설명에도 그 사실을 적는다. 사전 용어(`motion blur`, `no motion`, `no camera movement`)가 항상 우선한다. 이미지용에서는 영상 전용으로 처리된다.
 - `cityscape`는 배경/장소 용어로 사전에 등록(사용자 요청).
+- `lights`는 조명과 사물(전등·표시등) 두 의미를 가진다(사용자 요청). 사전의 `lights` 단독과, 패턴 규칙 P5의 복수형 머리말(`small blue indicator lights`, `street lights` 등)이 모두 "조명 + 주제(사물)" 두 의미로 처리된다(패턴 결과는 "추정"). 단수형 `light`는 조명 하나만. 패턴 결과도 의미를 여러 개 가질 수 있도록 확장했다(`pluralSenses`).
 - 고정 카메라 표현 17개를 카메라 움직임으로 등록(사용자 요청): `static camera`, `fixed camera`, `locked camera`, `locked-off camera`, `stationary camera`, `tripod shot`, `camera is static/fixed`, `camera remains (completely) static/still/fixed`, `camera stays (completely) static/still`, `camera does not move`, `camera doesn't move`. `static` 단독은 `static noise` 같은 다른 뜻이 있어 등록하지 않는다. 기존 "고정↔카메라 움직임" 충돌 쌍의 고정 쪽에 이 표현들을 같은 뜻으로 포함시켰다(새 쌍이 아님).
 - 경고 규칙의 기준과 초기 목록은 화면 1의 "경고 표시"에 기록. 새 충돌 쌍·모호어는 승인받은 것만 추가한다.
 - 공개 API 조사 결과: 사전을 대체하지 못한다(분류 부정확, 요청 제한). Wikipedia·Datamuse는 사용자가 누를 때만 보조로 쓴다. 인증키가 필요한 국립국어원 API는 쓰지 않는다.
@@ -157,4 +158,3 @@
 - **배포(7단계, 완료)**: 저장소 `bakchogall/vibe-coding-KHG`(Public), GitHub Pages는 `main` 브랜치 루트에서 배포. 커밋 작성자 이메일은 공개 저장소에 개인 이메일이 드러나지 않도록 GitHub 비공개 주소(`289829282+bakchogall@users.noreply.github.com`)로 바꿔 올렸다(올리기 전에 로컬 기록을 다시 썼고 파일 내용이 한 글자도 바뀌지 않았음을 확인). 이 저장소의 로컬 git 설정도 같은 주소를 쓴다. `README.md`는 과제 안내문 대신 이 도구를 소개하는 내용이다.
 - **알려진 한계(사용자 판단 대기)**:
   1. 사전에 등록된 `no ...` 표현(`no camera movement` 등) 안의 `no`에는 "부정 지시" 안내가 나오지 않는다. 안내를 유지할지.
-  2. 패턴 규칙 P5가 `small blue indicator lights` 같은 사물(지시등)을 조명으로 오분류한다. 복수형 `lights` 머리말을 제외하는 등 완화할지.

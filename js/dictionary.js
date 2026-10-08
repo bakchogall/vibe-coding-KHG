@@ -647,5 +647,312 @@
     ])
   );
 
-  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS, CAMERA_WORD_TERMS, CAMERA_MOTION_TERMS, TRANSITION_TERMS);
+  // ================= 사전 확장 묶음 (요소별) =================
+  // 촬영·영상 용어집 기준으로 체계적으로 채운다. 설명은 번역이 아니라 결과물에 미치는 효과 중심이고,
+  // 확신이 없는 설명은 쓰지 않는다. 같은 용어가 두 요소에 걸치면 m()으로 다의어로 둔다.
+  function bulk(element, pairs) {
+    return pairs.map(function (p) { return t(p[0], element, p[1]); });
+  }
+  var EXPANSION_TERMS = [];
+
+  // ---- 카메라: 렌즈·초점·노출·촬영 장비·광학 효과 ----
+  EXPANSION_TERMS.push.apply(EXPANSION_TERMS, [].concat(
+    // 초점거리
+    bulk('camera', [
+      ['14mm', '14mm 초광각. 아주 넓게 담기고 가장자리가 휘어 보이며 공간이 과장됨'],
+      ['16mm', '16mm 초광각. 넓은 공간을 담고 원근감이 과장됨'],
+      ['24mm', '24mm 광각. 풍경·실내를 넓게 담고 원근감이 살아남'],
+      ['28mm', '28mm 광각. 거리·다큐 사진에 흔한 약간 넓은 화각'],
+      ['50mm', '50mm 표준 화각. 사람 눈에 가까운 자연스러운 원근감'],
+      ['100mm', '100mm 중망원. 인물·접사에 쓰이며 배경이 부드럽게 흐려지고 압축됨'],
+      ['135mm', '135mm 망원. 인물을 멀리서 담아 배경이 크게 흐려지고 압축됨'],
+      ['200mm', '200mm 망원. 멀리 있는 대상을 당겨 담고 배경이 강하게 압축됨']
+    ]),
+    // 렌즈 종류
+    bulk('camera', [
+      ['wide angle lens', '광각 렌즈. 넓은 범위를 담고 원근감이 과장됨'],
+      ['ultra wide angle', '초광각. 아주 넓게 담기고 가장자리가 휘어 보일 수 있음'],
+      ['ultra wide', '초광각. 아주 넓게 담기고 가장자리가 휘어 보일 수 있음'],
+      ['telephoto lens', '망원 렌즈. 멀리 있는 대상을 당겨 담고 배경이 압축됨'],
+      ['prime lens', '단렌즈(초점거리 고정). 선명하고 배경 흐림이 좋은 사진 느낌'],
+      ['zoom lens', '줌 렌즈. 초점거리를 바꿔 화각을 조절함'],
+      ['macro lens', '접사 렌즈. 아주 가까이서 작은 대상의 세부를 크게 담음'],
+      ['portrait lens', '인물용 렌즈. 얼굴이 자연스럽고 배경이 부드럽게 흐려짐'],
+      ['standard lens', '표준 렌즈. 사람 눈에 가까운 자연스러운 화각'],
+      ['fisheye lens', '어안 렌즈. 아주 넓고 둥글게 휘어 보이는 화각'],
+      ['tilt shift lens', '틸트시프트 렌즈. 초점 범위를 기울여 미니어처처럼 보이게 함'],
+      ['anamorphic lens', '아나모픽 렌즈. 와이드 화면과 가로로 길게 번지는 빛 효과'],
+      ['vintage lens', '오래된 렌즈 같은 부드럽고 번지는 화질과 독특한 빛 번짐'],
+      ['cinema lens', '영화 촬영용 렌즈. 부드러운 질감과 자연스러운 배경 흐림']
+    ]),
+    // 초점·조리개
+    bulk('camera', [
+      ['deep focus', '화면 앞뒤 전체가 선명하게 초점이 맞은 상태'],
+      ['shallow focus', '초점 맞은 부분만 선명하고 앞뒤가 흐려짐'],
+      ['soft focus', '초점을 일부러 부드럽게 해 몽환적으로 번져 보이는 효과'],
+      ['selective focus', '일부 대상에만 초점을 맞추고 나머지는 흐리게 함'],
+      ['out of focus', '초점이 맞지 않아 흐릿하게 보임'],
+      ['in focus', '초점이 맞아 또렷하게 보임'],
+      ['rack focus', '초점을 한 대상에서 다른 대상으로 옮겨 시선을 이끎'],
+      ['focus pull', '촬영 중 초점을 앞뒤로 옮겨 시선을 이끎'],
+      ['follow focus', '움직이는 대상에 맞춰 초점을 계속 따라가며 유지함'],
+      ['tack sharp', '아주 또렷하게 초점이 맞은 선명함'],
+      ['creamy bokeh', '배경의 빛망울이 부드럽고 매끄럽게 흐려지는 보케'],
+      ['background blur', '배경이 흐려져 대상이 돋보임'],
+      ['defocused', '초점을 벗어나 흐려진 상태'],
+      ['focus stacking', '초점이 다른 여러 사진을 합쳐 전체를 선명하게 만든 효과'],
+      ['wide aperture', '조리개를 크게 열어 배경이 흐려지고 빛이 많이 들어옴'],
+      ['narrow aperture', '조리개를 좁혀 앞뒤가 모두 선명해지고 빛이 적게 들어옴'],
+      ['aperture', '조리개. 빛의 양과 배경 흐림 정도를 조절함']
+    ]),
+    // 노출·셔터·ISO
+    bulk('camera', [
+      ['exposure', '노출. 사진이 얼마나 밝게 찍히는지의 정도'],
+      ['overexposed', '노출 과다. 화면이 너무 밝아 밝은 부분의 디테일이 날아감'],
+      ['underexposed', '노출 부족. 화면이 어두워 어두운 부분의 디테일이 묻힘'],
+      ['shutter speed', '셔터 속도. 움직임을 멈춰 보이게 할지 흐르게 할지 정함'],
+      ['fast shutter speed', '빠른 셔터. 움직임이 얼어붙은 듯 또렷하게 찍힘'],
+      ['slow shutter speed', '느린 셔터. 움직임이 흐르듯 번지고 빛이 많이 들어옴'],
+      ['high iso', '높은 ISO. 어두운 곳에서 밝게 찍히지만 거친 노이즈가 생김'],
+      ['low iso', '낮은 ISO. 노이즈가 적고 깨끗한 화질'],
+      ['light trails', '긴 노출로 움직이는 빛이 선으로 남는 효과(차량 불빛 등)'],
+      ['star trails', '긴 노출로 별이 움직인 궤적이 선으로 남는 효과'],
+      ['light painting', '긴 노출 중 빛을 움직여 허공에 그림을 그리는 효과'],
+      ['high speed photography', '아주 빠른 셔터로 순간(물방울 튐 등)을 멈춘 듯 찍는 사진']
+    ]),
+    // 카메라·필름 종류
+    bulk('camera', [
+      ['dslr', 'DSLR 카메라로 찍은 듯한 선명한 사진 느낌'],
+      ['mirrorless camera', '미러리스 카메라로 찍은 듯한 선명한 사진 느낌'],
+      ['film camera', '필름 카메라로 찍은 듯한 입자감과 색감'],
+      ['35mm film', '35mm 필름 사진 같은 입자감과 색감'],
+      ['16mm film', '16mm 필름 같은 거친 입자와 옛 영화 느낌'],
+      ['8mm film', '8mm 필름 같은 거칠고 흔들리는 옛 홈비디오 느낌'],
+      ['super 8', 'Super 8 필름 같은 거칠고 따뜻한 옛 홈비디오 느낌'],
+      ['medium format', '중형 필름·센서 같은 풍부한 디테일과 부드러운 계조'],
+      ['large format', '대형 카메라 같은 매우 높은 디테일과 얕은 초점'],
+      ['polaroid', '즉석사진 같은 바랜 색감과 흰 테두리'],
+      ['instant camera', '즉석카메라로 찍은 듯한 부드럽고 바랜 색감'],
+      ['disposable camera', '일회용 카메라 같은 거친 플래시와 거친 화질'],
+      ['pinhole camera', '바늘구멍 카메라 같은 부드럽고 흐릿한 상과 긴 노출 느낌'],
+      ['camcorder', '캠코더로 찍은 듯한 옛 홈비디오 느낌'],
+      ['vhs', 'VHS 비디오테이프 같은 거친 화질, 색 번짐, 줄무늬'],
+      ['cctv', '감시카메라 같은 낮은 화질과 고정된 높은 시점'],
+      ['security camera', '보안 카메라 같은 낮은 화질과 고정된 높은 시점'],
+      ['webcam', '웹캠으로 찍은 듯한 낮은 화질과 정면 시점'],
+      ['action camera', '액션캠으로 찍은 듯한 광각과 역동적인 현장감'],
+      ['smartphone camera', '스마트폰 카메라로 찍은 듯한 일상적인 사진 느낌'],
+      ['phone camera', '휴대폰 카메라로 찍은 듯한 일상적인 사진 느낌'],
+      ['point and shoot', '컴팩트 카메라로 찍은 듯한 가벼운 스냅 사진 느낌'],
+      ['cinema camera', '영화용 카메라로 찍은 듯한 풍부한 색과 영화 같은 질감'],
+      ['imax', 'IMAX 같은 큰 화면에 맞춘 고해상도와 웅장한 화면']
+    ]),
+    // 광학 효과·노이즈
+    bulk('camera', [
+      ['lens distortion', '렌즈 때문에 직선이 휘어 보이는 왜곡'],
+      ['barrel distortion', '화면 가운데가 볼록하게 부풀어 보이는 광각 왜곡'],
+      ['chromatic aberration', '색수차. 밝은 경계에 붉은·푸른 색 번짐이 생김'],
+      ['anamorphic flare', '아나모픽 렌즈의 가로로 길게 번지는 푸른 빛 효과'],
+      ['light leak', '필름에 빛이 새어 들어 주황·붉은 번짐이 생기는 효과'],
+      ['halation', '밝은 빛 주변에 붉거나 주황빛 번짐이 생기는 필름 효과'],
+      ['bloom', '밝은 부분의 빛이 주변으로 번지며 퍼지는 효과'],
+      ['soft glow', '밝은 부분이 부드럽게 빛나듯 번지는 효과'],
+      ['diffusion filter', '확산 필터. 빛을 부드럽게 퍼뜨려 몽환적이고 부드러운 화면'],
+      ['nd filter', 'ND 필터. 빛을 줄여 밝은 곳에서도 느린 셔터나 얕은 초점을 가능하게 함'],
+      ['polarizing filter', '편광 필터. 반사를 줄이고 하늘 색과 대비를 진하게 함'],
+      ['sunstar', '강한 빛 둘레에 별 모양 빛줄기가 생기는 효과'],
+      ['starburst', '밝은 광원에서 별처럼 사방으로 뻗는 빛줄기 효과'],
+      ['lens dirt', '렌즈에 낀 얼룩이나 먼지 때문에 생기는 번짐'],
+      ['water droplets on lens', '렌즈에 물방울이 맺혀 일그러지고 흐려 보이는 효과'],
+      ['grainy', '입자가 거칠게 보이는 질감'],
+      ['digital noise', '디지털 노이즈. 어두운 곳에서 생기는 알갱이 같은 잡음'],
+      ['rolling shutter', '롤링 셔터. 빠른 움직임이 기울거나 휘어 보이는 현상'],
+      ['lens blur', '렌즈 때문에 흐려지는 효과'],
+      ['zoom blur', '줌 하는 동안 가운데에서 바깥으로 퍼지는 방사형 흐림']
+    ]),
+    // 원근 효과
+    bulk('camera', [
+      ['telephoto compression', '망원으로 앞뒤 거리가 눌려 대상과 배경이 가까워 보이는 효과'],
+      ['perspective distortion', '원근 왜곡. 가까운 것이 커지고 먼 것이 작아져 비례가 일그러져 보임'],
+      ['miniature effect', '실제 풍경이 장난감 미니어처처럼 보이는 효과'],
+      ['wide angle distortion', '광각에서 가장자리 대상이 늘어나거나 휘어 보이는 왜곡']
+    ]),
+    // 필름·특수 촬영 느낌
+    bulk('camera', [
+      ['film look', '영화 필름 같은 색감과 질감'],
+      ['analog film', '필름 사진 같은 입자감과 색감'],
+      ['expired film', '유통기한이 지난 필름처럼 색이 바래고 변색된 느낌'],
+      ['cross processing', '교차 현상. 색이 강하게 틀어지고 대비가 높아지는 필름 효과'],
+      ['night vision', '야간투시 화면처럼 녹색으로 밝게 보이는 거친 화면'],
+      ['thermal camera', '열화상 카메라처럼 온도를 색으로 보여 주는 화면'],
+      ['infrared photography', '적외선 사진. 식물이 희게 보이고 하늘이 어두워지는 비현실적 색'],
+      ['astrophotography', '별·은하를 긴 노출로 찍은 천체 사진'],
+      ['macro photography', '아주 가까이서 작은 대상을 크게 찍은 접사 사진']
+    ]),
+    // 화면 형식
+    bulk('camera', [
+      ['widescreen', '가로로 넓은 화면비. 영화 같은 넓은 화면'],
+      ['cinemascope', '아주 가로로 긴 영화용 와이드 화면'],
+      ['letterbox', '위아래에 검은 띠가 있는 영화 같은 화면'],
+      ['vertical video', '세로로 긴 영상(스마트폰 세로 화면)'],
+      ['square format', '정사각형 화면'],
+      ['aspect ratio', '화면의 가로세로 비율'],
+      ['cinematic aspect ratio', '영화처럼 가로로 긴 화면 비율']
+    ]),
+    // 영상 출처 느낌
+    bulk('camera', [
+      ['found footage', '우연히 발견된 영상처럼 흔들리고 거친 현장감'],
+      ['surveillance footage', '감시 카메라 영상 같은 낮은 화질과 고정된 시점'],
+      ['body cam', '몸에 단 카메라로 찍은 듯한 1인칭 시점과 흔들림'],
+      ['dash cam', '차량 블랙박스 영상 같은 광각과 낮은 화질'],
+      ['home video', '가정용 캠코더 영상 같은 일상적이고 거친 느낌'],
+      ['camcorder footage', '캠코더 영상 같은 옛 홈비디오 느낌'],
+      ['vhs footage', 'VHS 테이프 영상 같은 거친 화질과 색 번짐'],
+      ['security footage', '보안 카메라 영상 같은 낮은 화질과 고정된 시점']
+    ])
+  ));
+
+  // ---- 구도: 샷 크기·시점·프레이밍·원근 ----
+  EXPANSION_TERMS.push.apply(EXPANSION_TERMS, [].concat(
+    // 샷 크기
+    bulk('composition', [
+      ['extreme wide shot', '대상이 아주 작게 보이도록 장소를 아주 넓게 담음. 규모감과 고립감'],
+      ['extreme long shot', '대상이 아주 작게 보이도록 장소를 아주 넓게 담음. 규모감과 고립감'],
+      ['long shot', '대상 전체와 주변 환경이 함께 보이는 먼 거리 샷'],
+      ['full shot', '머리부터 발끝까지 전신이 화면에 담김'],
+      ['cowboy shot', '허벅지 중간부터 위를 담은 샷. 인물의 자세와 몸짓이 보임'],
+      ['american shot', '무릎 위쯤을 담은 샷(서부극에서 유래)'],
+      ['medium close-up', '가슴 위쪽을 담은 샷. 표정과 상체가 함께 보임'],
+      ['medium long shot', '인물을 무릎 위쯤부터 담고 주변도 조금 보이는 샷'],
+      ['medium wide shot', '인물과 주변 환경을 함께 담는 중간 정도로 넓은 샷'],
+      ['close shot', '대상을 가까이 담은 샷'],
+      ['tight shot', '대상이 화면을 꽉 채우는 가까운 샷'],
+      ['headshot', '얼굴과 어깨 정도를 담은 증명사진 같은 샷'],
+      ['head and shoulders', '머리와 어깨를 담은 구도'],
+      ['waist up', '허리 위를 담은 구도'],
+      ['bust shot', '가슴 위를 담은 구도']
+    ]),
+    // 샷 종류
+    bulk('composition', [
+      ['insert shot', '장면 중간에 끼워 넣는 사물·세부 클로즈업'],
+      ['reaction shot', '다른 인물의 말이나 사건에 반응하는 표정을 담은 샷'],
+      ['master shot', '장면 전체를 한 번에 보여 주는 기준 샷'],
+      ['reverse shot', '반대편에서 대상을 비추는 샷. 대화 장면에서 번갈아 씀'],
+      ['over the shoulder shot', '인물의 어깨 너머로 상대를 보는 샷. 대화하는 느낌'],
+      ['detail shot', '작은 부분이나 세부를 가까이 담은 샷'],
+      ['macro shot', '아주 가까이서 작은 대상을 크게 담은 샷'],
+      ['full body shot', '전신이 보이는 샷'],
+      ['full length shot', '전신이 보이는 샷'],
+      ['half body shot', '상반신이 보이는 샷'],
+      ['upper body shot', '상반신이 보이는 샷'],
+      ['close up shot', '대상을 가까이 크게 담은 샷'],
+      ['wide angle shot', '광각으로 넓게 담은 샷'],
+      ['portrait shot', '인물 사진처럼 얼굴과 상체 중심으로 담은 샷'],
+      ['two shot', '두 사람을 한 화면에 담은 샷'],
+      ['three shot', '세 사람을 한 화면에 담은 샷'],
+      ['group shot', '여러 사람을 한 화면에 담은 샷'],
+      ['crowd shot', '많은 사람이 보이는 넓은 샷']
+    ]),
+    // 각도·시점
+    bulk('composition', [
+      ["worm's-eye view", '땅바닥 가까이에서 위로 올려다보는 시점. 대상이 거대하고 위압적으로 보임'],
+      ['top down view', '바로 위에서 수직으로 내려다보는 시점. 배치와 패턴이 평면처럼 보임'],
+      ['top down shot', '바로 위에서 수직으로 내려다보는 시점. 배치와 패턴이 평면처럼 보임'],
+      ['overhead shot', '바로 위에서 수직으로 내려다보는 시점. 배치와 패턴이 평면처럼 보임'],
+      ['overhead view', '바로 위에서 수직으로 내려다보는 시점. 배치와 패턴이 평면처럼 보임'],
+      ['high angle shot', '위에서 내려다본 샷. 대상이 작고 약해 보임'],
+      ['low angle shot', '아래에서 올려다본 샷. 대상이 크고 강해 보임'],
+      ['eye level shot', '대상의 눈높이에서 찍은 샷. 자연스럽고 중립적인 느낌'],
+      ['ground level shot', '땅 높이에서 찍은 샷. 바닥의 질감과 대상이 크게 보임'],
+      ['canted angle', '카메라를 기울여 수평선이 비스듬한 화면. 불안하고 긴장된 느낌'],
+      ['tilted angle', '카메라가 기울어져 수평선이 비스듬한 화면'],
+      ['oblique angle', '대상을 정면이 아닌 비스듬한 각도에서 담음'],
+      ['point of view', '등장인물의 눈으로 보는 1인칭 시점'],
+      ['pov', '등장인물의 눈으로 보는 1인칭 시점'],
+      ['pov shot', '등장인물의 눈으로 보는 1인칭 시점의 샷'],
+      ['first person view', '등장인물의 눈으로 보는 1인칭 시점'],
+      ['first person perspective', '등장인물의 눈으로 보는 1인칭 시점'],
+      ['third person view', '인물 뒤나 옆에서 인물과 주변을 함께 보는 시점'],
+      ['third person perspective', '인물 뒤나 옆에서 인물과 주변을 함께 보는 시점'],
+      ['side view', '대상의 옆면이 보이는 시점'],
+      ['side profile', '얼굴이나 몸의 옆모습이 보이는 구도'],
+      ['profile view', '얼굴이나 몸의 옆모습이 보이는 구도'],
+      ['front view', '대상의 정면이 보이는 시점'],
+      ['frontal view', '대상의 정면이 보이는 시점'],
+      ['rear view', '대상의 뒷모습이 보이는 시점'],
+      ['back view', '대상의 뒷모습이 보이는 시점'],
+      ['three quarter view', '정면과 옆면의 중간(약 45도)에서 본 입체감 있는 시점'],
+      ['isometric view', '위에서 비스듬히 내려다보며 원근 없이 입체로 보이는 시점'],
+      ['isometric perspective', '위에서 비스듬히 내려다보며 원근 없이 입체로 보이는 시점'],
+      ['orthographic view', '원근 없이 평행하게 투영한 시점. 설계도 같은 느낌'],
+      ['aerial view', '높은 곳에서 넓게 내려다본 시점'],
+      ['drone view', '드론이 찍은 듯 높은 곳에서 내려다본 시점'],
+      ['satellite view', '위성에서 내려다본 듯한 아주 높은 시점'],
+      ['selfie', '팔을 뻗어 찍은 듯한 가까운 셀프 촬영 구도'],
+      ['mirror selfie', '거울에 비친 모습을 찍은 셀프 촬영 구도'],
+      ['cross section view', '내부가 보이도록 단면을 잘라 보여 주는 시점'],
+      ['cutaway view', '겉을 잘라 내부 구조를 드러내 보여 주는 시점'],
+      ['exploded view', '부품을 펼쳐 분해해 보여 주는 시점']
+    ]),
+    // 프레이밍·배치
+    bulk('composition', [
+      ['tight framing', '대상이 화면을 꽉 채우도록 가까이 담음. 답답하거나 긴장된 느낌'],
+      ['loose framing', '대상 주변에 여유 공간을 넉넉히 둠. 여유롭고 환경이 보임'],
+      ['centered composition', '대상을 화면 중앙에 두는 구도'],
+      ['off center', '대상을 중앙에서 벗어나게 둠. 역동적이거나 긴장감 있는 느낌'],
+      ['off-center composition', '대상을 중앙에서 벗어나게 둠. 역동적이거나 긴장감 있는 느낌'],
+      ['asymmetrical', '좌우가 대칭이 아닌 구도. 자연스럽고 역동적인 균형'],
+      ['asymmetrical composition', '좌우가 대칭이 아닌 구도. 자연스럽고 역동적인 균형'],
+      ['symmetrical composition', '좌우 대칭 구도. 안정적이고 정돈된 느낌'],
+      ['diagonal composition', '대각선을 따라 대상을 배치해 역동적인 느낌'],
+      ['diagonal lines', '화면을 가로지르는 대각선으로 움직임과 긴장감을 줌'],
+      ['triangular composition', '삼각형 모양으로 배치해 안정감과 시선 흐름을 만듦'],
+      ['golden spiral', '황금 나선을 따라 시선이 흐르도록 배치한 구도'],
+      ['fibonacci spiral', '황금 나선을 따라 시선이 흐르도록 배치한 구도'],
+      ['frame within a frame', '문·창 같은 틀로 대상을 한 번 더 감싸 시선을 모음'],
+      ['framing', '화면 안에 대상을 담는 방식'],
+      ['foreground framing', '앞쪽 사물로 대상을 둘러싸 틀을 만들어 깊이감을 줌'],
+      ['natural framing', '나뭇가지·문틀 같은 자연스러운 틀로 대상을 감쌈'],
+      ['layered composition', '앞·중간·뒤를 겹겹이 배치해 깊이감을 줌'],
+      ['foreground element', '앞쪽에 둔 사물. 깊이감과 거리감을 줌'],
+      ['balanced composition', '무게가 한쪽으로 쏠리지 않고 균형 잡힌 구도'],
+      ['dynamic composition', '대각선·기울임 등으로 움직임이 느껴지는 구도'],
+      ['minimal composition', '요소를 최소로 줄인 단순한 구도'],
+      ['fill the frame', '대상이 화면을 가득 채움'],
+      ['breathing room', '대상 주변의 여백. 답답하지 않고 여유로운 느낌'],
+      ['headroom', '인물 머리 위의 여백'],
+      ['lead room', '대상이 향하는 방향 앞쪽의 여백. 시선과 움직임에 여유를 줌'],
+      ['copy space', '글자를 넣을 수 있게 비워 둔 여백'],
+      ['left of frame', '대상이 화면 왼쪽에 놓임'],
+      ['right of frame', '대상이 화면 오른쪽에 놓임'],
+      ['center of frame', '대상이 화면 가운데에 놓임'],
+      ['foreground', '화면 앞쪽(가까운 곳) 영역'],
+      ['midground', '화면 중간 영역']
+    ]),
+    // 원근
+    bulk('composition', [
+      ['one point perspective', '소실점이 하나라 길이 화면 안쪽으로 모이는 깊이 있는 구도'],
+      ['two point perspective', '소실점이 둘이라 건물 모서리가 입체적으로 보이는 구도'],
+      ['three point perspective', '소실점이 셋이라 위나 아래로 극단적으로 치솟아 보이는 구도'],
+      ['forced perspective', '거리를 이용해 크기를 착각하게 만드는 구도'],
+      ['vanishing point', '선들이 모이는 소실점. 시선을 안쪽으로 이끎'],
+      ['atmospheric perspective', '멀수록 흐리고 푸르게 보여 깊이감을 주는 표현'],
+      ['foreshortening', '대상이 카메라를 향해 뻗어 짧고 크게 보이는 원근 표현'],
+      ['flat perspective', '깊이감이 적은 평평한 화면'],
+      ['deep perspective', '앞뒤 깊이가 강하게 느껴지는 화면']
+    ]),
+    // 화면 방향
+    bulk('composition', [
+      ['portrait orientation', '세로로 긴 화면 방향'],
+      ['landscape orientation', '가로로 긴 화면 방향'],
+      ['vertical composition', '세로 방향으로 구성한 구도'],
+      ['horizontal composition', '가로 방향으로 구성한 구도'],
+      ['panorama', '아주 넓게 이어진 파노라마 화면'],
+      ['panoramic view', '아주 넓게 이어진 파노라마 화면']
+    ])
+  ));
+
+  /*__EXPANSION_BLOCKS__*/
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS, CAMERA_WORD_TERMS, CAMERA_MOTION_TERMS, TRANSITION_TERMS, EXPANSION_TERMS);
 })();

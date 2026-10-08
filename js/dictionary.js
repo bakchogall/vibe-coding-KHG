@@ -1646,9 +1646,6 @@
       ['moon surface', '달 표면'],
       ['outer space', '별이 떠 있는 우주 공간'],
       ['galaxy', '수많은 별이 모인 은하'],
-      ['futuristic city', '미래적인 도시'],
-      ['cyberpunk city', '네온과 고층 빌딩이 빽빽한 사이버펑크 도시'],
-      ['post apocalyptic', '종말 이후의 황폐한 세계'],
       ['wasteland', '황무지'],
       ['medieval village', '중세 마을'],
       ['dungeon', '어둡고 축축한 던전(지하 감옥)'],
@@ -1697,6 +1694,19 @@
       m('snow', [
         ['setting', '눈이 내리거나 쌓인 환경'],
         ['color', '눈처럼 하얀 색']
+      ]),
+      // 장소 이름이면서 분위기(스타일)를 가리키는 표현은 두 의미를 모두 둔다.
+      m('futuristic city', [
+        ['setting', '미래적인 도시'],
+        ['style', '미래적인 분위기']
+      ]),
+      m('cyberpunk city', [
+        ['setting', '네온과 고층 빌딩이 빽빽한 도시'],
+        ['style', '어두운 미래 도시와 네온의 사이버펑크 분위기']
+      ]),
+      m('post apocalyptic', [
+        ['setting', '종말 이후의 황폐한 세계'],
+        ['style', '문명이 무너진 뒤의 거칠고 황량한 분위기']
       ])
     ]
   ));
@@ -1825,6 +1835,137 @@
       ['lo fi', '일부러 거칠고 편안하게 만든 로파이 분위기'],
       ['grunge', '낡고 거칠고 지저분한 질감'],
       ['isometric art', '위에서 비스듬히 본 등각 그림']
+    ])
+  ));
+
+  // ---- 전환/편집: 컷·전환·합성·속도·자막 (영상 전용) ----
+  // speed up, real time 처럼 대상의 움직임으로도 쓰이는 말은 오분류 위험이 있어 넣지 않았다.
+  EXPANSION_TERMS.push.apply(EXPANSION_TERMS, [].concat(
+    // 편집 리듬·구성
+    bulk('transition', [
+      ['cut to black', '장면이 갑자기 검은 화면으로 끊김'],
+      ['montage', '여러 짧은 장면을 이어 붙여 시간이나 감정을 압축해 보여 줌'],
+      ['rapid cuts', '아주 빠르게 이어지는 컷. 긴박하고 속도감 있는 편집'],
+      ['fast cuts', '아주 빠르게 이어지는 컷. 긴박하고 속도감 있는 편집'],
+      ['fast paced editing', '컷이 빠르게 이어지는 빠른 호흡의 편집'],
+      ['slow paced editing', '컷이 길고 천천히 이어지는 느린 호흡의 편집'],
+      ['invisible cut', '관객이 눈치채기 어렵게 자연스럽게 이어지는 컷'],
+      ['crosscut', '서로 다른 장소의 장면을 번갈아 보여 주는 컷'],
+      ['cross cutting', '서로 다른 장소의 장면을 번갈아 보여 주는 편집'],
+      ['parallel editing', '동시에 벌어지는 일들을 번갈아 보여 주는 편집'],
+      ['multi shot', '한 영상 안에 여러 샷이 이어지는 구성'],
+      ['scene change', '장면이 다른 장면으로 바뀜'],
+      ['time jump', '시간이 건너뛰어 다음 장면으로 넘어감'],
+      ['flashback', '과거의 장면으로 돌아감'],
+      ['flash forward', '미래의 장면을 미리 보여 줌'],
+      ['cinemagraph', '대부분 멈춰 있고 일부만 반복해 움직이는 짧은 영상'],
+      ['seamless loop', '처음과 끝이 끊김 없이 이어져 반복되는 영상'],
+      ['looping video', '끊김 없이 반복되는 영상'],
+      ['boomerang', '앞으로 갔다 거꾸로 돌아오기를 반복하는 영상']
+    ]),
+    // 장면 전환
+    bulk('transition', [
+      ['transition', '장면과 장면 사이를 이어 주는 전환'],
+      ['scene transition', '장면과 장면 사이를 이어 주는 전환'],
+      ['fade transition', '서서히 밝아지거나 어두워지며 넘어가는 전환'],
+      ['crossfade', '앞 장면이 옅어지며 다음 장면이 겹쳐 나타나는 전환'],
+      ['dip to black', '검은 화면을 거쳐 다음 장면으로 넘어가는 전환'],
+      ['dip to white', '흰 화면을 거쳐 다음 장면으로 넘어가는 전환'],
+      ['flash transition', '번쩍이는 섬광으로 장면이 바뀌는 전환'],
+      ['flash cut', '순간 번쩍이는 화면을 끼워 넣는 컷'],
+      ['iris wipe', '원형으로 열리거나 닫히며 장면이 바뀌는 전환'],
+      ['wipe transition', '새 장면이 한쪽에서 밀고 들어오며 이전 장면을 지우는 전환'],
+      ['push transition', '새 장면이 이전 장면을 밀어내며 들어오는 전환'],
+      ['zoom transition', '확대하며 다음 장면으로 넘어가는 전환'],
+      ['spin transition', '화면이 회전하며 다음 장면으로 넘어가는 전환'],
+      ['glitch transition', '화면이 깨지며 다음 장면으로 넘어가는 전환'],
+      ['morph transition', '모양이 변하며 다음 장면으로 이어지는 전환'],
+      ['match dissolve', '비슷한 모양의 장면이 서서히 겹쳐 이어지는 전환'],
+      ['light leak transition', '빛 번짐 효과를 타고 넘어가는 전환'],
+      ['whip pan transition', '카메라를 휙 돌려 흐려진 화면으로 장면을 바꾸는 전환'],
+      ['blur transition', '화면이 흐려지며 다음 장면으로 넘어가는 전환'],
+      ['invisible transition', '전환이 눈에 띄지 않게 자연스럽게 이어짐']
+    ]),
+    // 합성·속도 효과
+    bulk('transition', [
+      ['picture in picture', '작은 화면을 큰 화면 위에 띄워 함께 보여 줌'],
+      ['multiple exposure', '여러 장면을 겹쳐 한 화면에 합성한 효과'],
+      ['ghosting', '지나간 움직임의 잔상이 겹쳐 보이는 효과'],
+      ['motion trail', '움직임의 궤적이 잔상으로 남는 효과'],
+      ['bullet time', '움직임을 느리게 하면서 카메라가 대상 주위를 도는 효과'],
+      ['rewind', '영상을 되감는 효과'],
+      ['played backwards', '영상을 거꾸로 재생함'],
+      ['slowed down', '재생 속도가 느려짐'],
+      ['ultra slow motion', '아주 느린 슬로모션. 순간의 디테일이 극대화됨'],
+      ['super slow motion', '아주 느린 슬로모션. 순간의 디테일이 극대화됨'],
+      ['variable speed', '재생 속도가 중간에 변함'],
+      ['speed ramping', '재생 속도를 빠르게 했다 느리게 했다 바꾸는 효과'],
+      ['frame by frame', '한 프레임씩 끊어서 움직이는 느낌']
+    ]),
+    // 화면 위 글자·표시
+    bulk('transition', [
+      ['text overlay', '화면 위에 겹쳐 표시한 글자'],
+      ['subtitles', '화면 아래에 표시되는 자막'],
+      ['captions', '화면에 표시되는 자막'],
+      ['title card', '제목이 적힌 화면'],
+      ['end credits', '영상 끝에 올라가는 제작진 명단'],
+      ['lower third', '화면 아래쪽에 인물이나 정보를 표시하는 자막'],
+      ['watermark', '화면에 겹쳐 찍힌 워터마크'],
+      ['logo overlay', '로고를 화면 위에 겹쳐 표시함']
+    ])
+  ));
+
+  // ---- 주제: 프롬프트에 자주 나오는 흔한 대상 (사람·동물·식물·탈것·사물·음식·판타지) ----
+  // 위키피디아 조회가 기대만큼 매끄럽지 않아 흔한 대상도 사전에 둔다(사용자 결정). 고유명사는 넣지 않는다.
+  EXPANSION_TERMS.push.apply(EXPANSION_TERMS, [].concat(
+    // 사람
+    bulk('subject', [
+      ['man', '남자'], ['men', '남자들(man의 복수)'],
+      ['woman', '여자'], ['women', '여자들(woman의 복수)'],
+      ['boy', '소년'], ['girl', '소녀'],
+      ['child', '어린이'], ['children', '어린이들(child의 복수)'],
+      ['baby', '아기'], ['person', '사람'], ['people', '사람들(person의 복수)'],
+      ['couple', '커플, 부부'], ['family', '가족'],
+      ['soldier', '군인'], ['doctor', '의사'], ['chef', '요리사'], ['student', '학생'],
+      ['musician', '음악가'], ['dancer', '무용수'], ['athlete', '운동선수'],
+      ['king', '왕'], ['queen', '여왕'], ['princess', '공주']
+    ]),
+    // 동물
+    bulk('subject', [
+      ['cat', '고양이'], ['dog', '개'], ['puppy', '강아지'], ['kitten', '새끼 고양이'],
+      ['horse', '말'], ['cow', '소'], ['sheep', '양'], ['rabbit', '토끼'], ['deer', '사슴'],
+      ['fox', '여우'], ['wolf', '늑대'], ['wolves', '늑대들(wolf의 복수)'], ['bear', '곰'],
+      ['lion', '사자'], ['tiger', '호랑이'], ['elephant', '코끼리'], ['monkey', '원숭이'],
+      ['panda', '판다'], ['owl', '올빼미, 부엉이'], ['eagle', '독수리'], ['whale', '고래'],
+      ['dolphin', '돌고래'], ['shark', '상어'], ['butterfly', '나비'], ['fish', '물고기'], ['bird', '새']
+    ]),
+    // 식물
+    bulk('subject', [
+      ['flower', '꽃'], ['tree', '나무'], ['leaf', '잎'], ['leaves', '잎들(leaf의 복수)'],
+      ['palm tree', '야자나무'], ['pine tree', '소나무'], ['cherry blossom', '벚꽃'], ['mushroom', '버섯']
+    ]),
+    // 탈것
+    bulk('subject', [
+      ['car', '자동차'], ['sports car', '스포츠카'], ['truck', '트럭'], ['bus', '버스'], ['taxi', '택시'],
+      ['motorcycle', '오토바이'], ['bicycle', '자전거'], ['train', '기차'], ['airplane', '비행기'],
+      ['boat', '보트'], ['ship', '배'], ['spaceship', '우주선']
+    ]),
+    // 사물
+    bulk('subject', [
+      ['chair', '의자'], ['table', '탁자'], ['desk', '책상'], ['bed', '침대'], ['sofa', '소파'],
+      ['lamp', '램프, 조명 기구'], ['mirror', '거울'], ['window', '창문'], ['door', '문'], ['clock', '시계'],
+      ['book', '책'], ['phone', '전화기'], ['laptop', '노트북 컴퓨터'], ['guitar', '기타'], ['piano', '피아노'],
+      ['bottle', '병'], ['sword', '검'], ['knife', '칼']
+    ]),
+    // 음식
+    bulk('subject', [
+      ['coffee', '커피'], ['tea', '차'], ['bread', '빵'], ['cake', '케이크'], ['pizza', '피자'],
+      ['burger', '햄버거'], ['sushi', '초밥'], ['apple', '사과'], ['strawberry', '딸기'], ['ice cream', '아이스크림']
+    ]),
+    // 판타지·가상 존재
+    bulk('subject', [
+      ['dragon', '용'], ['wizard', '마법사'], ['witch', '마녀'], ['fairy', '요정'], ['mermaid', '인어'],
+      ['vampire', '뱀파이어'], ['ghost', '유령'], ['angel', '천사'], ['monster', '괴물'], ['alien', '외계인']
     ])
   ));
 

@@ -52,11 +52,14 @@
 
   // 충돌 가능성이 있는 용어 쌍. 사전 용어(소문자, 하이픈은 공백)끼리 비교한다.
   var CONFLICTS = [
-    { a: ['warm tone'], b: ['cool tone'],
+    { a: ['warm tone', 'warm light', 'warm lighting', 'warm sunlight', 'warm colors', 'warm palette'],
+      b: ['cool tone', 'cool light', 'cool lighting', 'cold light', 'cool colors', 'cool palette'],
       reason: '따뜻한 색조와 차가운 색조는 서로 반대 방향의 색감입니다.' },
-    { a: ['black and white'], b: ['vibrant', 'pastel'],
+    { a: ['black and white'],
+      b: ['vibrant', 'pastel', 'vibrant colors', 'vivid colors', 'bold colors', 'neon colors', 'pastel palette', 'neon palette', 'jewel tones'],
       reason: '흑백과 선명한 색·파스텔 색은 함께 쓰기 어렵습니다.' },
-    { a: ['vibrant'], b: ['muted'],
+    { a: ['vibrant', 'vibrant colors', 'vivid colors', 'bold colors', 'saturated', 'high saturation', 'oversaturated'],
+      b: ['muted', 'muted colors', 'muted palette', 'desaturated', 'low saturation', 'faded colors', 'washed out colors', 'washed out'],
       reason: '선명한 색과 채도 낮은 색은 서로 반대입니다.' },
     { a: ['close up', 'extreme close up', 'close up shot', 'tight shot', 'tight framing', 'fill the frame'],
       b: ['wide shot', 'wide angle', 'wide angle shot', 'extreme wide shot', 'extreme long shot', 'long shot', 'loose framing'],

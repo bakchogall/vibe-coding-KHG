@@ -122,16 +122,26 @@
    'there here again already still just only even also too')
     .split(' ').forEach(function (w) { NON_MODIFIER_WORDS[w] = true; });
 
-  // 패턴 수식어: 기능어·문법 단어가 아니고, 그 자리에서 사전 용어로 시작하지 않는 단어.
-  // allowElements: 머리말 규칙이 허용하는 요소. 한 단어짜리 사전 용어의 의미가 모두 이 요소들이면 수식어로 받아들인다
-  // (예: `flowing`은 피사체 움직임 용어이지만 `flowing motion`에서는 motion 을 꾸미는 수식어다).
-  function isModifier(units, j, idx, allowElements) {
-    if (IGNORED_WORDS[units[j].key] || NON_MODIFIER_WORDS[units[j].key]) return false;
-    var hit = matchAt(units, j, idx);
-    if (!hit) return true;
-    return !!(allowElements && hit.len === 1 && hit.entry.senses.every(function (s) {
-      return allowElements.indexOf(s.element) !== -1;
-    }));
+  // 패턴 수식어 검사: units[i .. headIdx-1] 가 모두 수식어로 쓸 수 있는 단어인지 본다.
+  // 수식어는 기능어·문법 단어가 아니고, 그 자리에서 사전 용어로 시작하지 않는 단어다.
+  // 예외: allowElements 에 든 요소의 사전 용어(여러 단어 가능)는 수식어로 받아들여 통째로 건너뛴다
+  // (예: `flowing`은 피사체 움직임 용어이지만 `flowing motion`에서는 motion 을 꾸미는 수식어이고,
+  //  `neon pink`는 색 용어이지만 `neon pink light`에서는 light 를 꾸미는 수식어다).
+  function modifiersOk(units, i, headIdx, idx, allowElements) {
+    var j = i;
+    while (j < headIdx) {
+      if (!units[j].linkNext) return false;
+      var key = units[j].key;
+      if (IGNORED_WORDS[key] || NON_MODIFIER_WORDS[key]) return false;
+      var hit = matchAt(units, j, idx);
+      if (!hit) { j++; continue; }
+      if (!allowElements || hit.len > headIdx - j || !hit.entry.senses.every(function (s) {
+        return allowElements.indexOf(s.element) !== -1;
+      })) return false;
+      if (!units[j + hit.len - 1].linkNext) return false;
+      j += hit.len;
+    }
+    return true;
   }
 
   // i 번째 단어에서 시작하는 가장 긴 패턴 일치. 길이가 같으면 먼저 정의된 규칙이 이긴다.
@@ -165,11 +175,7 @@
       for (var k = maxMods; k >= (dictAtStart ? 1 : h.min); k--) {
         var headIdx = i + k;
         if (headIdx >= units.length) continue;
-        var ok = true;
-        for (var j = i; j < headIdx; j++) {
-          if (!units[j].linkNext || !isModifier(units, j, idx, h.modifierElements)) { ok = false; break; }
-        }
-        if (!ok) continue;
+        if (!modifiersOk(units, i, headIdx, idx, h.modifierElements)) continue;
         var key = units[headIdx].key;
         if (key !== h.head && pluralStems(key).indexOf(h.head) === -1) continue;
         // 복수형(lights 등)에 따로 정한 의미가 있으면 그것을 쓴다(예: 조명 + 사물의 두 뜻).

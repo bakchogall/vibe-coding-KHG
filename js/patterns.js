@@ -39,11 +39,12 @@
     heads: [
       // lights(복수형)는 조명일 수도, 전등·표시등 같은 사물일 수도 있어 두 의미를 모두 준다.
       { id: 'P5', element: 'lighting', head: 'light',        min: 1,
+        modifierElements: ['color'], // neon pink light 처럼 색 용어가 앞에 오는 경우
         pluralSenses: [
           { element: 'lighting', ko: '"lights"로 끝나는 표현 → 조명 (패턴 규칙 P5)' },
           { element: 'subject',  ko: '"lights"는 전등·표시등 같은 사물을 가리킬 수도 있어 주제(사물)로도 추정 (패턴 규칙 P5)' }
         ] },
-      { id: 'P5', element: 'lighting', head: 'lighting',     min: 0 },
+      { id: 'P5', element: 'lighting', head: 'lighting',     min: 0, modifierElements: ['color'] },
       { id: 'P6', element: 'style',    head: 'style',        min: 1 },
       { id: 'P6', element: 'camera',   head: 'lens',         min: 0 },
       { id: 'P6', element: 'style',    head: 'render',       min: 1 },

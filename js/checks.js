@@ -14,6 +14,32 @@
   // 지정하지 않으면 안내하는 권장 요소(카테고리에 해당하는 것만 점검)
   var RECOMMENDED = ['style', 'lighting', 'composition', 'color', 'camera_motion', 'subject_motion'];
 
+  // 카메라 움직임 용어 묶음. 사전에 용어를 늘릴 때 여기에도 같은 뜻의 용어를 넣어야 충돌을 찾는다.
+  // drone shot·aerial shot·helicopter shot(촬영 시점이기도 함), parallax·reveal shot(움직임의 결과/연출)은 넣지 않는다.
+  var PAN_TERMS = ['pan', 'pan left', 'pan right', 'panning', 'panning shot', 'pan shot', 'slow pan', 'whip pan', 'swish pan',
+    'pan and tilt', 'pan and zoom', 'camera pans', 'camera pans left', 'camera pans right'];
+  var TILT_TERMS = ['tilt', 'tilt up', 'tilt down', 'whip tilt', 'pan and tilt', 'camera tilts', 'camera tilts up', 'camera tilts down'];
+  var ZOOM_TERMS = ['zoom in', 'zoom out', 'slow zoom', 'slow zoom in', 'slow zoom out', 'zooming in', 'zooming out', 'crash zoom',
+    'snap zoom', 'whip zoom', 'dolly zoom', 'vertigo effect', 'camera zooms in', 'camera zooms out', 'pan and zoom'];
+  var SHAKE_TERMS = ['handheld', 'handheld camera', 'shaky cam', 'shaky camera', 'camera shake'];
+  // 확대·축소(렌즈)를 뺀 카메라 이동·회전 용어
+  var MOVE_TERMS = PAN_TERMS.concat(TILT_TERMS, SHAKE_TERMS, [
+    'dolly in', 'dolly out', 'dolly back', 'dolly forward', 'dolly shot', 'push in', 'pull out', 'pull back',
+    'truck left', 'truck right', 'trucking shot', 'lateral tracking shot', 'pedestal up', 'pedestal down',
+    'crane up', 'crane down', 'crane shot', 'jib shot', 'boom up', 'boom down', 'rising shot', 'descending shot',
+    'tracking shot', 'track in', 'track out', 'tracking in', 'tracking out', 'forward tracking shot', 'backward tracking shot',
+    'reverse tracking shot', 'overhead tracking shot', 'side tracking shot', 'follow shot', 'following shot', 'follow cam',
+    'steadicam', 'steadicam shot', 'gimbal shot', 'slider shot', 'cable cam',
+    'orbit', 'orbiting shot', 'orbital shot', 'arc shot', 'arc around', 'orbit around', '360 orbit', '360 degree orbit',
+    'circle around', 'revolve around', 'camera roll', 'barrel roll', 'rotating camera', 'camera rotation',
+    'drone flyover', 'flyover', 'fly through', 'flythrough', 'fpv drone shot', 'fpv shot', 'aerial tracking shot', 'sweeping aerial shot',
+    'camera pushes in', 'camera pulls back', 'camera pulls out', 'camera rises', 'camera descends', 'camera orbits',
+    'camera circles', 'camera rotates', 'camera follows', 'camera tracks', 'camera glides', 'camera sweeps', 'camera drifts',
+    'camera floats', 'camera swoops', 'camera dives', 'camera moves forward', 'camera moves backward', 'camera moves closer',
+    'camera moves away', 'camera moves left', 'camera moves right', 'camera moves up', 'camera moves down',
+    'moving camera', 'moving shot', 'gliding shot'
+  ]);
+
   // 충돌 가능성이 있는 용어 쌍. 사전 용어(소문자, 하이픈은 공백)끼리 비교한다.
   var CONFLICTS = [
     { a: ['warm tone'], b: ['cool tone'],
@@ -26,23 +52,23 @@
       reason: '클로즈업과 넓게 담는 구도는 서로 반대입니다.' },
     { a: ['zoom in'], b: ['zoom out'],
       reason: '확대와 축소는 서로 반대 동작입니다.' },
-    { a: ['static shot', 'static camera', 'fixed camera', 'locked camera', 'locked-off camera', 'stationary camera',
+    { a: ['static shot', 'locked-off shot', 'fixed shot', 'static camera', 'fixed camera', 'locked camera', 'locked-off camera', 'stationary camera',
           'tripod shot', 'camera is static', 'camera is fixed', 'camera remains static', 'camera remains completely static',
           'camera remains still', 'camera remains fixed', 'camera stays static', 'camera stays completely static',
           'camera stays still', 'camera does not move', "camera doesn't move"],
-      b: ['pan', 'tilt', 'dolly in', 'tracking shot', 'handheld', 'orbit'],
+      b: MOVE_TERMS,
       reason: '고정된 화면과 카메라 움직임은 함께 쓰기 어렵습니다.' },
     // 부정형 카메라 움직임("no ...") ↔ 그 움직임을 요구하는 용어
     { a: ['no camera movement', 'no camera motion'],
-      b: ['pan', 'tilt', 'dolly in', 'tracking shot', 'handheld', 'orbit', 'zoom in', 'zoom out'],
+      b: MOVE_TERMS.concat(ZOOM_TERMS),
       reason: '카메라 움직임이 없어야 한다는 지시와 카메라가 움직이는 촬영 방식을 함께 쓰고 있습니다.' },
-    { a: ['no camera shake'], b: ['handheld'],
+    { a: ['no camera shake'], b: SHAKE_TERMS,
       reason: '흔들림이 없어야 한다는 지시와 손으로 든 듯 흔들리는 촬영 방식(핸드헬드)은 함께 쓰기 어렵습니다.' },
-    { a: ['no zoom', 'no camera zoom'], b: ['zoom in', 'zoom out'],
+    { a: ['no zoom', 'no camera zoom'], b: ZOOM_TERMS,
       reason: '확대·축소를 하지 말라는 지시와 확대·축소 동작이 함께 있습니다.' },
-    { a: ['no pan', 'no panning', 'no camera pan'], b: ['pan'],
+    { a: ['no pan', 'no panning', 'no camera pan'], b: PAN_TERMS,
       reason: '카메라를 좌우로 돌리지 말라는 지시와 좌우로 도는 동작이 함께 있습니다.' },
-    { a: ['no tilt'], b: ['tilt'],
+    { a: ['no tilt'], b: TILT_TERMS,
       reason: '카메라를 위아래로 꺾지 말라는 지시와 위아래로 꺾는 동작이 함께 있습니다.' },
     // 부정형 피사체 움직임("no ...") ↔ 피사체 동작 용어. 표현이 가리키는 대상이 다를 수 있어
     // 카메라 쪽보다 확실하지 않으므로 uncertain 으로 표시한다. no movement/no motion 은 카메라일 수도 있어 여기서만 다룬다.

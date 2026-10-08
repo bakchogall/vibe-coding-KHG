@@ -408,5 +408,178 @@
     t('long take', 'camera_motion', '컷 없이 오래 이어 찍는 긴 테이크')
   ];
 
-  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS, CAMERA_WORD_TERMS);
+  // ---- 카메라 움직임 확장 (영상용) ----
+  // 촬영 용어집 기준으로 체계적으로 채운다. 설명은 번역이 아니라 화면에 미치는 효과 중심.
+  function cm(pairs) {
+    return pairs.map(function (p) { return t(p[0], 'camera_motion', p[1]); });
+  }
+  var CAMERA_MOTION_TERMS = [].concat(
+    // 팬·틸트
+    cm([
+      ['pan left', '카메라를 왼쪽으로 돌려 장면을 훑음'],
+      ['pan right', '카메라를 오른쪽으로 돌려 장면을 훑음'],
+      ['panning', '카메라를 좌우로 돌리는 움직임'],
+      ['panning shot', '카메라를 좌우로 돌리며 찍은 장면. 넓은 공간을 훑어보는 느낌'],
+      ['pan shot', '카메라를 좌우로 돌리며 찍은 장면. 넓은 공간을 훑어보는 느낌'],
+      ['slow pan', '천천히 좌우로 도는 카메라. 장면을 차분히 훑어보는 느낌'],
+      ['whip pan', '카메라를 아주 빠르게 휙 돌려 화면이 흐려지는 효과. 장면 전환이나 급한 시선 이동에 쓰임'],
+      ['swish pan', '카메라를 아주 빠르게 휙 돌려 화면이 흐려지는 효과. 장면 전환이나 급한 시선 이동에 쓰임'],
+      ['tilt up', '카메라를 위로 꺾어 아래에서 위로 훑음. 높은 대상을 드러내는 느낌'],
+      ['tilt down', '카메라를 아래로 꺾어 위에서 아래로 훑음'],
+      ['whip tilt', '카메라를 위아래로 아주 빠르게 휙 꺾는 움직임'],
+      ['pan and tilt', '카메라를 좌우와 위아래로 함께 돌림'],
+      ['pan and zoom', '카메라를 좌우로 돌리면서 확대·축소함']
+    ]),
+    // 줌·푸시·풀·달리
+    cm([
+      ['slow zoom', '천천히 확대하거나 축소해 시선을 서서히 모음'],
+      ['slow zoom in', '천천히 확대. 대상에 서서히 집중시키는 느낌'],
+      ['slow zoom out', '천천히 축소. 주변 환경이 서서히 드러남'],
+      ['zooming in', '확대하는 중. 대상이 점점 크게 보임'],
+      ['zooming out', '축소하는 중. 대상이 점점 작아지며 주변이 넓어짐'],
+      ['crash zoom', '순식간에 확 확대. 충격이나 강조 효과'],
+      ['snap zoom', '순식간에 확 확대. 충격이나 강조 효과'],
+      ['whip zoom', '아주 빠르게 확대하거나 축소하는 효과'],
+      ['dolly zoom', '카메라는 다가가면서 화각은 넓히는(또는 반대) 기법. 대상 크기는 그대로인데 배경이 늘어나거나 줄어들어 어지러운 느낌'],
+      ['vertigo effect', '카메라는 다가가면서 화각은 넓히는(또는 반대) 기법. 대상 크기는 그대로인데 배경이 늘어나거나 줄어들어 어지러운 느낌'],
+      ['push in', '카메라가 대상 쪽으로 밀고 들어감. 긴장과 집중이 커짐'],
+      ['pull out', '카메라가 대상에서 멀어지며 물러남. 주변 환경이 드러남'],
+      ['pull back', '카메라가 대상에서 뒤로 물러남. 주변 환경이 드러남'],
+      ['dolly out', '카메라가 레일 등으로 뒤로 물러나며 찍음'],
+      ['dolly back', '카메라가 레일 등으로 뒤로 물러나며 찍음'],
+      ['dolly forward', '카메라가 레일 등으로 앞으로 다가가며 찍음'],
+      ['dolly shot', '레일이나 수레 위에서 부드럽게 이동하며 찍은 장면']
+    ]),
+    // 트럭·크레인·상하 이동
+    cm([
+      ['truck left', '카메라를 왼쪽 옆으로 평행하게 이동'],
+      ['truck right', '카메라를 오른쪽 옆으로 평행하게 이동'],
+      ['trucking shot', '카메라가 옆으로 평행하게 이동하며 찍은 장면'],
+      ['lateral tracking shot', '대상과 나란히 옆으로 이동하며 찍은 장면'],
+      ['pedestal up', '카메라를 수직으로 높임'],
+      ['pedestal down', '카메라를 수직으로 낮춤'],
+      ['crane up', '크레인으로 카메라를 위로 올림. 장면이 넓게 펼쳐지는 느낌'],
+      ['crane down', '크레인으로 카메라를 아래로 내림. 대상에 가까워지는 느낌'],
+      ['crane shot', '크레인으로 높이와 방향을 부드럽게 바꾸며 찍은 장면'],
+      ['jib shot', '긴 팔(지브)에 카메라를 달아 부드럽게 오르내리거나 휘돌며 찍은 장면'],
+      ['boom up', '붐 팔로 카메라를 위로 올림'],
+      ['boom down', '붐 팔로 카메라를 아래로 내림'],
+      ['rising shot', '카메라가 위로 상승하며 찍은 장면'],
+      ['descending shot', '카메라가 아래로 하강하며 찍은 장면']
+    ]),
+    // 트래킹·따라가기·흔들림
+    cm([
+      ['track in', '카메라가 대상 쪽으로 다가가며 따라 찍음'],
+      ['track out', '카메라가 대상에서 멀어지며 찍음'],
+      ['tracking in', '카메라가 대상 쪽으로 다가가며 따라 찍음'],
+      ['tracking out', '카메라가 대상에서 멀어지며 찍음'],
+      ['forward tracking shot', '카메라가 앞으로 나아가며 찍은 장면'],
+      ['backward tracking shot', '카메라가 뒤로 물러나며 찍은 장면'],
+      ['reverse tracking shot', '카메라가 뒤로 물러나며 찍은 장면'],
+      ['overhead tracking shot', '대상 위에서 내려다보며 따라가는 장면'],
+      ['side tracking shot', '대상 옆에서 나란히 따라가며 찍은 장면'],
+      ['follow shot', '움직이는 대상을 뒤따라가며 찍은 장면'],
+      ['following shot', '움직이는 대상을 뒤따라가며 찍은 장면'],
+      ['follow cam', '움직이는 대상을 뒤따라가며 찍는 카메라'],
+      ['steadicam', '흔들림을 잡아 주는 장비. 부드럽게 따라가며 찍은 느낌'],
+      ['steadicam shot', '흔들림을 잡아 주는 장비로 부드럽게 따라가며 찍은 장면'],
+      ['gimbal shot', '짐벌로 흔들림 없이 부드럽게 이동하며 찍은 장면'],
+      ['shaky cam', '카메라가 흔들리는 효과. 긴박하고 현장감 있는 느낌'],
+      ['shaky camera', '카메라가 흔들리는 효과. 긴박하고 현장감 있는 느낌'],
+      ['handheld camera', '손으로 든 듯 조금 흔들리는 카메라. 다큐멘터리 같은 현장감'],
+      ['camera shake', '카메라가 흔들리는 현상이나 효과']
+    ]),
+    // 궤도·회전
+    cm([
+      ['orbiting shot', '카메라가 대상 주위를 돌며 찍은 장면. 입체감과 극적인 느낌'],
+      ['orbital shot', '카메라가 대상 주위를 돌며 찍은 장면. 입체감과 극적인 느낌'],
+      ['arc shot', '카메라가 대상 주위를 호를 그리며 도는 장면'],
+      ['arc around', '카메라가 대상 주위를 호를 그리며 돎'],
+      ['orbit around', '카메라가 대상 주위를 돎'],
+      ['360 orbit', '카메라가 대상 주위를 한 바퀴(360도) 돎'],
+      ['360 degree orbit', '카메라가 대상 주위를 한 바퀴(360도) 돎'],
+      ['circle around', '카메라가 대상 주위를 빙 돎'],
+      ['revolve around', '카메라가 대상 주위를 빙 돎'],
+      ['camera roll', '카메라가 렌즈 방향을 축으로 돌아 화면이 기울어지며 도는 움직임'],
+      ['barrel roll', '카메라나 비행체가 앞뒤 축으로 한 바퀴 구르는 움직임'],
+      ['rotating camera', '카메라가 도는 장면'],
+      ['camera rotation', '카메라의 회전']
+    ]),
+    // 항공·비행 (aerial shot, helicopter shot 은 아래에서 다의어로 등록)
+    cm([
+      ['drone flyover', '드론이 위를 날아 지나가는 항공 장면'],
+      ['flyover', '위를 날아 지나가는 항공 장면'],
+      ['fly through', '공간 속을 뚫고 날아가듯 지나가는 장면'],
+      ['flythrough', '공간 속을 뚫고 날아가듯 지나가는 장면'],
+      ['fpv drone shot', '1인칭 시점 드론의 빠르고 역동적인 비행 장면'],
+      ['fpv shot', '1인칭 시점 드론의 빠르고 역동적인 비행 장면'],
+      ['aerial tracking shot', '공중에서 대상을 따라가며 찍은 장면'],
+      ['sweeping aerial shot', '넓은 공간을 크게 훑는 항공 장면']
+    ]),
+    // "camera + 동사" 문장형 표현
+    cm([
+      ['camera pans', '카메라가 좌우로 돌아 장면을 훑음'],
+      ['camera pans left', '카메라가 왼쪽으로 돌아 장면을 훑음'],
+      ['camera pans right', '카메라가 오른쪽으로 돌아 장면을 훑음'],
+      ['camera tilts', '카메라가 위아래로 꺾임'],
+      ['camera tilts up', '카메라가 위로 꺾여 올려다봄'],
+      ['camera tilts down', '카메라가 아래로 꺾여 내려다봄'],
+      ['camera zooms in', '카메라가 확대하며 대상에 다가감'],
+      ['camera zooms out', '카메라가 축소하며 주변이 넓어짐'],
+      ['camera pushes in', '카메라가 대상 쪽으로 밀고 들어감'],
+      ['camera pulls back', '카메라가 뒤로 물러남. 주변 환경이 드러남'],
+      ['camera pulls out', '카메라가 뒤로 물러남. 주변 환경이 드러남'],
+      ['camera rises', '카메라가 위로 올라감'],
+      ['camera descends', '카메라가 아래로 내려감'],
+      ['camera orbits', '카메라가 대상 주위를 돎'],
+      ['camera circles', '카메라가 대상 주위를 빙 돎'],
+      ['camera rotates', '카메라가 돎'],
+      ['camera follows', '카메라가 대상을 뒤따라감'],
+      ['camera tracks', '카메라가 대상을 따라 이동함'],
+      ['camera glides', '카메라가 미끄러지듯 부드럽게 이동함'],
+      ['camera sweeps', '카메라가 넓게 휩쓸듯 이동함'],
+      ['camera drifts', '카메라가 천천히 떠가듯 이동함'],
+      ['camera floats', '카메라가 떠 있듯 부드럽게 이동함'],
+      ['camera swoops', '카메라가 급히 날아 내려오거나 휘감듯 이동함'],
+      ['camera dives', '카메라가 아래로 급강하함'],
+      ['camera moves forward', '카메라가 앞으로 나아감'],
+      ['camera moves backward', '카메라가 뒤로 물러남'],
+      ['camera moves closer', '카메라가 대상에 가까이 다가감'],
+      ['camera moves away', '카메라가 대상에서 멀어짐'],
+      ['camera moves left', '카메라가 왼쪽으로 이동함'],
+      ['camera moves right', '카메라가 오른쪽으로 이동함'],
+      ['camera moves up', '카메라가 위로 이동함'],
+      ['camera moves down', '카메라가 아래로 이동함']
+    ]),
+    // 그 밖의 촬영 움직임·효과
+    cm([
+      ['parallax', '카메라가 움직일 때 가까운 것은 빨리, 먼 것은 느리게 지나가 깊이감이 생기는 효과'],
+      ['parallax effect', '카메라가 움직일 때 가까운 것은 빨리, 먼 것은 느리게 지나가 깊이감이 생기는 효과'],
+      ['reveal shot', '카메라 움직임으로 대상이나 장소를 서서히 드러내는 장면'],
+      ['slow reveal', '카메라 움직임으로 대상이나 장소를 천천히 드러냄'],
+      ['steady camera', '흔들림 없이 안정된 카메라'],
+      ['stable camera', '흔들림 없이 안정된 카메라'],
+      ['locked-off shot', '삼각대 등에 고정해 움직이지 않는 장면'],
+      ['fixed shot', '카메라가 고정되어 움직이지 않는 장면'],
+      ['motion control shot', '컴퓨터로 제어해 같은 움직임을 정확히 반복하는 카메라 장면'],
+      ['slider shot', '슬라이더 위에서 짧고 부드럽게 이동하며 찍은 장면'],
+      ['cable cam', '케이블에 매달려 이동하며 찍은 장면'],
+      ['moving camera', '계속 움직이는 카메라'],
+      ['moving shot', '카메라가 움직이며 찍은 장면'],
+      ['gliding shot', '미끄러지듯 부드럽게 이동하며 찍은 장면']
+    ]),
+    // 구도(시점)와 움직임 두 뜻을 가진 항공 촬영
+    [
+      m('aerial shot', [
+        ['composition', '높은 곳에서 넓게 내려다본 항공 시점'],
+        ['camera_motion', '공중에서 움직이며 찍은 장면']
+      ]),
+      m('helicopter shot', [
+        ['composition', '헬리콥터에서 내려다본 높은 시점'],
+        ['camera_motion', '헬리콥터를 타고 공중에서 이동하며 찍은 장면']
+      ])
+    ]
+  );
+
+  PC.DEFAULT_TERMS = PC.DEFAULT_TERMS.concat(SUBJECT_TERMS, COLOR_OVERLAP_TERMS, EFFECT_TERMS, NEGATED_MOTION_TERMS, STATIC_CAMERA_TERMS, LIGHTS_TERMS, CAMERA_WORD_TERMS, CAMERA_MOTION_TERMS);
 })();

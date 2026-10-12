@@ -30,7 +30,13 @@
     var code = ch.charCodeAt(0);
     return code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 !== 0;
   }
+  // 마지막 글자 받침이 ㄹ인지(으로/로는 ㄹ 받침일 때 "로"를 쓴다: 화질로, 색감으로)
+  function endsWithRieul(word) {
+    var code = String(word).replace(/s+$/, '').slice(-1).charCodeAt(0);
+    return code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 === 8;
+  }
   function josa(word, withBatchim, without) { return hasBatchim(word) ? withBatchim : without; }
+  function euroRo(word) { return hasBatchim(word) && !endsWithRieul(word) ? '으로' : '로'; }
 
   // "사막. 건조하고 광활한 모래땅" → "사막". 짧은 명사형 풀이만 쓰고 아니면 붙이지 않는다.
   function gloss(ko) {
@@ -128,7 +134,7 @@
       last = EXPRESS_LABEL[e];
     });
     var s = '';
-    if (parts.length) s = parts.join(', ') + josa(last, '으로 ', '로 ') + '표현하도록 지시합니다.';
+    if (parts.length) s = parts.join(', ') + euroRo(last) + ' 표현하도록 지시합니다.';
     if (negations.length) {
       var neg = '‘' + negations.map(function (n) { return n.text; }).join('’, ‘') + '’ 등은 피하도록 지시합니다.';
       s = s ? s + ' 또한 ' + neg : neg;
@@ -183,5 +189,5 @@
     };
   }
 
-  PC.summary = { summarize: summarize, josa: josa, gloss: gloss };
+  PC.summary = { summarize: summarize, josa: josa, euroRo: euroRo, gloss: gloss };
 })();

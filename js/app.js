@@ -76,6 +76,17 @@
     });
   }
 
+  // 한눈에 보기: 문장 두 줄 + 참고 줄. 점수나 판단 없이 읽은 내용만 옮긴다.
+  function renderGlance(analysis) {
+    var result = PC.summary.summarize(analysis, PC.check(analysis, { wanted: state.wanted }));
+    var box = $('glance');
+    clear(box);
+    result.sentences.forEach(function (s) { box.appendChild(h('p', { class: 'glance-line', text: s })); });
+    var meta = $('glance-meta');
+    clear(meta);
+    result.meta.forEach(function (line) { meta.appendChild(h('li', { text: line })); });
+  }
+
   function renderAnatomy(analysis) {
     var box = $('anatomy');
     clear(box);
@@ -272,7 +283,7 @@
         var i = state.wanted.indexOf(e.id);
         if (input.checked && i === -1) state.wanted.push(e.id);
         if (!input.checked && i !== -1) state.wanted.splice(i, 1);
-        if (state.analysis) { renderReading(state.analysis); renderWarnings(state.analysis); }
+        if (state.analysis) { renderGlance(state.analysis); renderReading(state.analysis); renderWarnings(state.analysis); }
       });
       box.appendChild(h('label', { class: 'want-item', for: 'want-' + e.id }, [input, elementChip(e.id)]));
     });
@@ -444,6 +455,7 @@
     state.selected = -1;
     state.highlighted = [];
     renderSummary(analysis);
+    renderGlance(analysis);
     renderAnatomy(analysis);
     renderDetail();
     renderReading(analysis);

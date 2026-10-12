@@ -34,7 +34,8 @@
         <label class="field" for="prompt">
           <span class="field-label">영어 프롬프트</span>
         </label>
-        <textarea id="prompt" rows="6" maxlength="5000" spellcheck="false"
+        <p class="hint" id="lang-hint">영어로 된 프롬프트를 입력하세요. 한글 등 다른 언어는 분석하지 못합니다.</p>
+        <textarea id="prompt" aria-describedby="lang-hint counter" rows="6" maxlength="5000" spellcheck="false"
           placeholder="예: A beautiful griffin without wings, warm tone, cool tone, 85mm, maybe sunset"></textarea>
         <p class="counter" id="counter" aria-live="off">0 / 5000</p>
         <p class="notice-box" id="input-note" role="status" hidden></p>
@@ -49,10 +50,16 @@
 
       <div id="results" hidden>
         <section class="card" aria-labelledby="summary-title">
-          <h2 id="summary-title">2. 분류 요약</h2>
-          <p id="summary" aria-live="polite"></p>
+          <h2 id="summary-title">2. 한눈에 보기</h2>
+          <p class="hint">사전과 규칙으로 읽은 내용을 문장으로 옮긴 것입니다. 내 의도와 맞는지는 직접 판단하세요.</p>
+          <div id="glance" class="glance" aria-live="polite"></div>
+          <ul id="glance-meta" class="glance-meta"></ul>
+          <p id="summary" class="meta" aria-live="polite"></p>
           <ul id="legend" class="legend"></ul>
         </section>
+
+        <details class="more" id="more">
+          <summary>자세히 보기 (해부 결과 · 읽힌 표 · 경고 · 용어 설명)</summary>
 
         <section class="card" aria-labelledby="anatomy-title">
           <h2 id="anatomy-title">3. 해부 결과</h2>
@@ -77,6 +84,7 @@
           <h2 id="terms-title">6. 용어 설명</h2>
           <ul id="terms" class="terms"></ul>
         </section>
+        </details>
       </div>
     </div>
 
@@ -128,6 +136,7 @@
   <script src="js/patterns.js"></script>
   <script src="js/analyzer.js"></script>
   <script src="js/checks.js"></script>
+  <script src="js/summary.js"></script>
   <script src="js/lookup.js"></script>
   <script src="js/userdict.js"></script>
   <script src="js/ui.js"></script>
